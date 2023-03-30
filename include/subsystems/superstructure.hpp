@@ -1,8 +1,10 @@
 #pragma once
+
+#include "okapi/impl/device/motor/motorGroup.hpp"
+
 #include "ryanlib/StateMachine.hpp"
 #include "ryanlib/TaskWrapper.hpp"
 #include "ryanlib/Solenoid.hpp"
-#include "okapi/impl/device/motor/motorGroup.hpp"
 
 enum class SuperstructureState { INTAKING, ROLLING, LOAD_POSITION, LOADING, FIRING, IDLE };
 

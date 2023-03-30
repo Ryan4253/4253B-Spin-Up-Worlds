@@ -75,8 +75,9 @@ void opcontrol(void);
 /**
  * You can add C++-only headers here
  */
-#include "subsystems/chassis.hpp"
-#include "subsystems/superstructure.hpp"
+// #include "subsystems/chassis.hpp"
+// #include "subsystems/superstructure.hpp"
+// #include "subsystems/globals"
 //#include <iostream>
 #endif
 
