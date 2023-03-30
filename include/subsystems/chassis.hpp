@@ -1,8 +1,13 @@
 #pragma once
 #include "okapi/api/units/QAngle.hpp"
+#include "ryanlib/AsyncProfiler.hpp"
 
 enum class ChassisSide {
     LEFT, RIGHT
+};
+
+class Chassis : public ryan::AsyncMotionProfiler {
+    
 };
 
 void pointTurnToAngle(okapi::QAngle targetAngle);
