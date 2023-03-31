@@ -5,7 +5,7 @@
 #include "ryanlib/AsyncProfiler.hpp"
 #include "ryanlib/Math.hpp"
 
-#include "../globals.hpp"
+#include "globals.hpp"
 
 enum class ChassisSide {
     LEFT, RIGHT

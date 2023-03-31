@@ -75,9 +75,10 @@ void opcontrol(void);
 /**
  * You can add C++-only headers here
  */
-// #include "subsystems/chassis.hpp"
-// #include "subsystems/superstructure.hpp"
-// #include "subsystems/globals"
+#include "subsystems/chassis.hpp"
+#include "subsystems/superstructure.hpp"
+#include "globals.hpp"
+#include "gui/autonselector.hpp"
 //#include <iostream>
 #endif
 

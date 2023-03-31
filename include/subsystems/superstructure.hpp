@@ -18,7 +18,7 @@ template class ryan::StateMachine<SuperstructureState>;
 class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<SuperstructureState> {
     public:
     Superstructure(const std::shared_ptr<okapi::MotorGroup> &imotors,
-                   const std::shared_ptr<ryan::Solenoid> &idriveSolenoid, 
+                   const std::shared_ptr<ryan::Solenoid> &ichassisSolenoid, 
                    const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid, 
                    const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch);
 
@@ -33,7 +33,7 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
 
     protected:
     std::shared_ptr<okapi::MotorGroup> motors;
-    std::shared_ptr<ryan::Solenoid> driveSolenoid;
+    std::shared_ptr<ryan::Solenoid> chassisSolenoid;
     std::shared_ptr<ryan::Solenoid> puncherSolenoid;
     std::shared_ptr<okapi::ADIButton> puncherLimitSwitch;
 

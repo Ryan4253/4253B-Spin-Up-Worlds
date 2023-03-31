@@ -12,6 +12,8 @@
 #include "ryanlib/Solenoid.hpp"
 #include "ryanlib/AsyncProfiler.hpp"
 
+#include "subsystems/superstructure.hpp"
+
 #define LVGL_SCREEN_WIDTH 480
 #define LVGL_SCREEN_HEIGHT 240
 
@@ -21,24 +23,25 @@ using namespace okapi;
 const double DEADBAND = 0.0500;
 
 // CONTROLLER(s)
-extern Controller master;
+extern std::shared_ptr<Controller> master;
 
 // MOTORS
-extern MotorGroup leftChassis;
-extern MotorGroup rightChassis;
+extern std::shared_ptr<MotorGroup> leftChassis;
+extern std::shared_ptr<MotorGroup> rightChassis;
 
-extern MotorGroup superstructure;
+extern std::shared_ptr<MotorGroup> superstructureMotors;
 
 // PNEUMAICS
-extern ryan::Solenoid chassisSolenoid;
-extern ryan::Solenoid puncherSolenoid;
-extern ryan::Solenoid expansionSolenoid;
+extern std::shared_ptr<ryan::Solenoid> chassisSolenoid;
+extern std::shared_ptr<ryan::Solenoid> puncherSolenoid;
+extern std::shared_ptr<ryan::Solenoid> expansionSolenoid;
 
 // SENSORS
-extern IMU imu;
-extern ADIButton puncherButton;
+extern std::shared_ptr<IMU> imu;
+extern std::shared_ptr<ADIButton> puncherLimitSwitch;
 
 // SUBSYSTEM CONTROLLERS
 extern std::shared_ptr<ChassisController> chassis;
 extern std::shared_ptr<ryan::AsyncMotionProfiler> profiler;
 extern std::shared_ptr<IterativePosPIDController> turnPID;
+extern std::shared_ptr<Superstructure> superstructure;
