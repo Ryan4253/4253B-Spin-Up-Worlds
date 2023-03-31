@@ -41,8 +41,8 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     private:
     bool isDisabled, fired, wantToIntake, isAutonomousEnabled;
     double jogSpeed{0.0};
-    double puncherSpeed{0.0};
-    double intakeSpeed{0.0};
+    double puncherSpeed{1.0};
+    double intakeSpeed{1.0};
     ControlState controlState;
     PistonState pistonState;
     SuperstructureState superstructureState;

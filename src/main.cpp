@@ -50,16 +50,30 @@ void autonomous() {
 }
 
 void opcontrol() {
-    leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
-    rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+    squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
+    squiggles::SplineGenerator gen = squiggles::SplineGenerator(
+        constraints, 
+        std::make_shared<squiggles::TankModel>(12, constraints), 
+        0.01
+    );
+    auto path = gen.generate({squiggles::Pose(0, 0, 0), squiggles::Pose(1, 0, 10)});
+    // for(int i = 0; i < path.size(); i++) {
+    //     squiggles::ProfilePoint point = path[i];
+    //     std::cout << "Left: " << point.wheel_velocities[0] << "    Right: " << point.wheel_velocities[1] << std::endl;
+    // }
 
-    auto model = std::static_pointer_cast<SkidSteerModel>(chassis->getModel());
-    while(true) {
-        model->curvature(
-            master->getAnalog(ControllerAnalog::leftY), 
-            master->getAnalog(ControllerAnalog::rightX),
-            DEADBAND
-        );
-        pros::delay(10);
-    }
+    std::cout << path[1].wheel_velocities[0];
+
+    // leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+    // rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+
+    // auto model = std::static_pointer_cast<SkidSteerModel>(chassis->getModel());
+    // while(true) {
+    //     model->curvature(
+    //         master->getAnalog(ControllerAnalog::leftY), 
+    //         master->getAnalog(ControllerAnalog::rightX),
+    //         DEADBAND
+    //     );
+    //     pros::delay(10);
+    // }
 }
