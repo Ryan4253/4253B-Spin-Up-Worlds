@@ -28,6 +28,7 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     void intake();
     void setPuncherSpeed(double ispeed);
     void setIntakeSpeed(double ispeed);
+    void autonomousEnabled(bool iisEnabled);
 
     void loop() override;
 
@@ -38,7 +39,7 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     std::shared_ptr<okapi::ADIButton> puncherLimitSwitch;
 
     private:
-    bool isDisabled, fired, wantToIntake;
+    bool isDisabled, fired, wantToIntake, isAutonomousEnabled;
     double jogSpeed{0.0};
     double puncherSpeed{0.0};
     double intakeSpeed{0.0};

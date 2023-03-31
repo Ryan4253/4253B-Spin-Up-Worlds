@@ -16,13 +16,15 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+    leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
+    rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     switch (Selector::auton) {
         case 0:
             // doNothing();
             break;
 
         case 1:
-            // redAutonA();
+            autonA();
             break;
 
         case 2:
@@ -48,6 +50,9 @@ void autonomous() {
 }
 
 void opcontrol() {
+    leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+    rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+
     auto model = std::static_pointer_cast<SkidSteerModel>(chassis->getModel());
     while(true) {
         model->curvature(

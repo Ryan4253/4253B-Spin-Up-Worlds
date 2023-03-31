@@ -39,7 +39,7 @@
 /**
  * You should add more #includes here
  */
-//#include "okapi/api.hpp"
+#include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
 
 /**
@@ -78,6 +78,7 @@ void opcontrol(void);
 #include "subsystems/chassis.hpp"
 #include "subsystems/superstructure.hpp"
 #include "globals.hpp"
+#include "autons.hpp"
 #include "gui/autonselector.hpp"
 //#include <iostream>
 #endif
