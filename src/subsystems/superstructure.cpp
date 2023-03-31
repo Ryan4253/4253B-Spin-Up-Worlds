@@ -2,14 +2,18 @@
 
 Superstructure::Superstructure(const std::shared_ptr<okapi::MotorGroup> &imotors,
                                const std::shared_ptr<ryan::Solenoid> &idriveSolenoid, 
-                               const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid)
+                               const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid, 
+                               const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch)
 {
     motors = std::move(imotors);
     driveSolenoid = std::move(idriveSolenoid);
     puncherSolenoid = std::move(ipuncherSolenoid);
+    puncherLimitSwitch = std::move(ipuncherLimitSwitch);
+
     isDisabled = false;
+    fired = false;
     pistonState = PistonState::DISENGAGED;
-    state = ControlState::MANUAL;
+    controlState = ControlState::MANUAL;
 }
 
 void Superstructure::disable(bool idisabled) {
@@ -17,40 +21,68 @@ void Superstructure::disable(bool idisabled) {
 }
 
 void Superstructure::jog(double ipercentSpeed, PistonState ipistonState) {
-    state = ControlState::MANUAL;
+    controlState = ControlState::MANUAL;
     jogSpeed = ipercentSpeed;
     pistonState = ipistonState;
+}
+
+void Superstructure::fire() {
+    controlState = ControlState::AUTOMATIC;
+    fired = true;
+    wantToIntake = false;
+}
+
+void Superstructure::intake() {
+    controlState = ControlState::AUTOMATIC;
+    wantToIntake = true;
+}
+
+void Superstructure::setPuncherSpeed(double ispeed) {
+    puncherSpeed = std::abs(ispeed);
+}
+
+void Superstructure::setIntakeSpeed(double ispeed) {
+    intakeSpeed = std::abs(ispeed);
 }
 
 void Superstructure::loop() {
     if(isDisabled) return;
     
     while (true) {
-        switch (state) {
+        switch (controlState) {
             case ControlState::MANUAL:
                 if(pistonState == PistonState::DISENGAGED) {
                     driveSolenoid->set(true);
                 } else {
                     driveSolenoid->set(false);
-                }
-                if(pistonState == PistonState::INTAKE) {
-                    puncherSolenoid->set(false);
-                } else {
-                    puncherSolenoid->set(true);
+                    if(pistonState == PistonState::INTAKE) {
+                        puncherSolenoid->set(false);
+                    } else {
+                        puncherSolenoid->set(true);
+                    }
                 }
                 motors->moveVoltage(jogSpeed * 12000);
                 break;
 
             case ControlState::AUTOMATIC:
-                if (!button->isPressed()) {
+                if (!puncherLimitSwitch->isPressed()) {
                     fired = false;
                 }
-                if ((button->isPressed() && fired) || (!button->isPressed())) {
-                    motor->moveVoltage(12000 * cataSpeed);
-                    cataState = CatapultState::MOVING;
+                if ((puncherLimitSwitch->isPressed() && fired) || (!puncherLimitSwitch->isPressed())) {
+                    superstructureState = SuperstructureState::LOADING;
+                    motors->moveVoltage(12000 * puncherSpeed);
                 } else {
-                    motor->moveVoltage(0);
-                    cataState = CatapultState::LOAD_POSITION;
+                    superstructureState = SuperstructureState::LOADED;
+                    motors->moveVoltage(0);
+                }
+                if(wantToIntake && superstructureState == SuperstructureState::LOADED) {
+                    superstructureState = SuperstructureState::INTAKING;
+                    motors->moveVoltage(-12000 * intakeSpeed);
+                }
+                if(superstructureState == SuperstructureState::LOADED) {
+                    driveSolenoid->set(false);
+                } else {
+                    driveSolenoid->set(true);
                 }
                 break;
         }

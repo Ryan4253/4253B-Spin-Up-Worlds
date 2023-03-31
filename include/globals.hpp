@@ -1,11 +1,13 @@
 #pragma once
 
-#include "include/okapi/impl/device/motor/motor.hpp"
-#include "include/okapi/impl/device/motor/motorGroup.hpp"
-#include "include/okapi/impl/device/controller.hpp"
-#include "include/okapi/impl/device/rotarysensor/IMU.hpp"
-#include "include/okapi/api/chassis/controller/chassisController.hpp"
-#include "include/okapi/api/control/iterative/iterativePosPidController.hpp"
+#include "okapi/impl/device/motor/motor.hpp"
+#include "okapi/impl/device/motor/motorGroup.hpp"
+#include "okapi/impl/device/controller.hpp"
+#include "okapi/impl/device/rotarysensor/IMU.hpp"
+#include "okapi/api/chassis/controller/chassisController.hpp"
+#include "okapi/impl/chassis/controller/chassisControllerBuilder.hpp"
+#include "okapi/api/control/iterative/iterativePosPidController.hpp"
+#include "okapi/impl/device/button/adiButton.hpp"
 
 #include "ryanlib/Solenoid.hpp"
 #include "ryanlib/AsyncProfiler.hpp"
@@ -13,27 +15,30 @@
 #define LVGL_SCREEN_WIDTH 480
 #define LVGL_SCREEN_HEIGHT 240
 
+using namespace okapi;
+
 // CONSTANTS
 const double DEADBAND = 0.0500;
 
 // CONTROLLER(s)
-extern okapi::Controller master;
+extern Controller master;
 
 // MOTORS
-extern okapi::MotorGroup leftChassis;
-extern okapi::MotorGroup rightChassis;
-// extern Motor catapultMotor;
-extern okapi::Motor intake;
+extern MotorGroup leftChassis;
+extern MotorGroup rightChassis;
+
+extern MotorGroup superstructure;
 
 // PNEUMAICS
-extern ryan::Solenoid intakeAngler;
-extern ryan::Solenoid expansion;
+extern ryan::Solenoid chassisSolenoid;
+extern ryan::Solenoid puncherSolenoid;
+extern ryan::Solenoid expansionSolenoid;
 
 // SENSORS
-extern okapi::IMU imu;
-// extern ADIButton catapultButton;
+extern IMU imu;
+extern ADIButton puncherButton;
 
 // SUBSYSTEM CONTROLLERS
-extern std::shared_ptr<okapi::ChassisController> chassis;
+extern std::shared_ptr<ChassisController> chassis;
 extern std::shared_ptr<ryan::AsyncMotionProfiler> profiler;
-extern std::shared_ptr<okapi::IterativePosPIDController> turnPID;
+extern std::shared_ptr<IterativePosPIDController> turnPID;

@@ -1,7 +1,7 @@
 #include "globals.hpp"
 
 // CONTROLLERS
-okapi::Controller master(okapi::ControllerId::master);
+Controller master(okapi::ControllerId::master);
 
 // MOTORS
 Motor leftFront(10, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
@@ -11,26 +11,25 @@ Motor rightFront(7, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUn
 Motor rightMid(6, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
 Motor rightBack(5, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
 
+Motor leftSuperstructure(1, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
+Motor rightSuperstructure(2, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
+
 MotorGroup leftChassis({leftFront, leftMid, leftBack});
 MotorGroup rightChassis({rightFront, rightMid, rightBack});
 
-// Motor catapultMotor(11, false, AbstractMotor::gearset::red,
-// AbstractMotor::encoderUnits::degrees);
-Motor intake(19, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
+MotorGroup superstructure({leftSuperstructure, rightSuperstructure});
 
-// PNEUMATICS
-Pneumatics intakeAngler('A');
-Pneumatics expansion('G');
+// SOLENOIDS
+ryan::Solenoid chassisSolenoid('A');
+ryan::Solenoid puncherSolenoid('B');
+ryan::Solenoid expansionSolenoid('G');
 
 // SENSORS
 IMU imu(20);
-// ADIButton catapultButton('G', false);
-// ADIEncoder leftTracker('A', 'B', true);
-// ADIEncoder rightTracker('E', 'F', false);
-// ADIEncoder midTracker('C', 'D', false);
+ADIButton puncherButton('C');
 
 // MOTION PROFILE CONSTANTS
-ProfileConstraint moveLimit({6_ftps, 10_ftps2, 10_ftps2, 34_ftps3}); //! todo!
+ryan::ProfileConstraint moveLimit({6_ftps, 10_ftps2, 10_ftps2, 34_ftps3}); //! todo!
 
 // SUBSYSTEM CONTROLLERS
 std::shared_ptr<ChassisController> chassis =
@@ -40,10 +39,10 @@ std::shared_ptr<ChassisController> chassis =
     .withDimensions({AbstractMotor::gearset::blue, 1.0}, {{2.75_in, 1.294_ft}, imev5BlueTPR})
     .build();
 
-std::shared_ptr<AsyncMotionProfiler> profiler =
-  AsyncMotionProfilerBuilder()
+std::shared_ptr<ryan::AsyncMotionProfiler> profiler =
+  ryan::AsyncMotionProfilerBuilder()
     .withOutput(chassis)
-    .withProfiler(std::make_unique<SCurveMotionProfile>(moveLimit))
+    .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
     .build();
 
 std::shared_ptr<IterativePosPIDController> turnPID =
