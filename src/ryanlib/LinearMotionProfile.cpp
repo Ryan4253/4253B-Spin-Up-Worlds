@@ -95,6 +95,10 @@ void TrapezoidalMotionProfile::setDistance(okapi::QLength iDistance){
     }
 }
 
+ProfileConstraint TrapezoidalMotionProfile::getConstraint() const {
+    return constraint;
+}
+
 okapi::QTime TrapezoidalMotionProfile::getTotalTime() const{
     return timePhase[2];
 }
@@ -302,6 +306,10 @@ void SCurveMotionProfile::setDistance(okapi::QLength iDistance){
         timePhase[i] += timePhase[i-1];
         distPhase[i] += distPhase[i-1];
     }
+}
+
+ProfileConstraint SCurveMotionProfile::getConstraint() const {
+    return constraint;
 }
 
 okapi::QTime SCurveMotionProfile::getTotalTime() const{

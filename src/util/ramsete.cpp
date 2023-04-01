@@ -6,6 +6,7 @@ RamseteController::RamseteController(std::shared_ptr<OdomChassisController> iCha
     b = iB;
     zeta = iZeta;
     chassis = std::move(iChassis);
+    trackWidth = chassis->getChassisScales().wheelTrack;
 }
 
 std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(QSpeed vel, QAngularSpeed angularVel, const Pose& error){

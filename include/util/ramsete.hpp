@@ -27,6 +27,7 @@ class RamseteController{
     Pose tolerance;
     double b;
     double zeta;
+    QLength trackWidth;
 };
 
 }

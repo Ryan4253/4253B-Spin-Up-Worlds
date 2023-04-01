@@ -11,6 +11,7 @@
 
 #include "ryanlib/Solenoid.hpp"
 #include "ryanlib/AsyncProfiler.hpp"
+#include "ryanlib/AsyncOdomProfiler.hpp"
 
 #include "subsystems/superstructure.hpp"
 
@@ -39,9 +40,10 @@ extern std::shared_ptr<ryan::Solenoid> expansionSolenoid;
 // SENSORS
 extern std::shared_ptr<IMU> imu;
 extern std::shared_ptr<ADIButton> puncherLimitSwitch;
+extern std::shared_ptr<ADIEncoder> middleTracker;
 
 // SUBSYSTEM CONTROLLERS
-extern std::shared_ptr<ChassisController> chassis;
-extern std::shared_ptr<ryan::AsyncMotionProfiler> profiler;
+extern std::shared_ptr<OdomChassisController> chassis;
+extern std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler;
 extern std::shared_ptr<IterativePosPIDController> turnPID;
 extern std::shared_ptr<Superstructure> superstructure;

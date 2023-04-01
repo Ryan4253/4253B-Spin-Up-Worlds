@@ -27,20 +27,31 @@ std::shared_ptr<ryan::Solenoid> expansionSolenoid = std::make_shared<ryan::Solen
 // SENSORS
 std::shared_ptr<IMU> imu(new IMU(20));
 std::shared_ptr<ADIButton> puncherLimitSwitch(new ADIButton('C'));
+std::shared_ptr<ADIEncoder> middleTracker(new ADIEncoder('A', 'B'));
 
 // MOTION PROFILE CONSTANTS
 ryan::ProfileConstraint moveLimit({6_ftps, 10_ftps2, 10_ftps2, 34_ftps3}); //! todo!
 
 // SUBSYSTEM CONTROLLERS
-std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
+std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
     .withMotors(leftChassis, rightChassis)
     .withDimensions(
         {AbstractMotor::gearset::blue, 1.0}, 
         {{2.75_in, 1.294_ft}, imev5BlueTPR}
     )
-    .build();
+    .withSensors(
+        leftChassis->getEncoder(), 
+        rightChassis->getEncoder(), 
+        middleTracker
+    )
+    .buildOdometry();
 
-std::shared_ptr<ryan::AsyncMotionProfiler> profiler = ryan::AsyncMotionProfilerBuilder()
+// std::shared_ptr<ryan::AsyncMotionProfiler> profiler = ryan::AsyncMotionProfilerBuilder()
+//     .withOutput(chassis)
+//     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
+//     .build();
+
+std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler = ryan::AsyncOdomMotionProfilerBuilder()
     .withOutput(chassis)
     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
     .build();

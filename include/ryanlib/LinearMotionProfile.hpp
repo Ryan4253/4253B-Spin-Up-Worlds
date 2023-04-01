@@ -90,6 +90,8 @@ class LinearMotionProfile {
      */
     virtual void setConstraint(ProfileConstraint iConstraint) = 0;
 
+    virtual ProfileConstraint getConstraint() const = 0;
+
     /**
      * @brief Gets the total time to run the profile
      * 
@@ -151,6 +153,7 @@ class TrapezoidalMotionProfile : public LinearMotionProfile{
 
     void setDistance(okapi::QLength iDistance) override;
     void setConstraint(ProfileConstraint iConstraint) override;
+    ProfileConstraint getConstraint() const override;
 
     okapi::QTime getTotalTime() const override;
     okapi::QLength getPosition(okapi::QTime time) const override;
@@ -181,6 +184,7 @@ class SCurveMotionProfile : public LinearMotionProfile{
 
     void setDistance(okapi::QLength iDistance) override;
     void setConstraint(ProfileConstraint iConstraint) override;
+    ProfileConstraint getConstraint() const override;
 
     okapi::QTime getTotalTime() const override;
     okapi::QLength getPosition(okapi::QTime time) const override;
