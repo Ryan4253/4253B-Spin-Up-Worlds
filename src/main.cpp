@@ -14,7 +14,7 @@ void initialize() {
 void disabled() {}
 
 void competition_initialize() {}
-
+/*
 void autonomous() {
     leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
@@ -50,20 +50,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-    squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
-    squiggles::SplineGenerator gen = squiggles::SplineGenerator(
-        constraints, 
-        std::make_shared<squiggles::TankModel>(12, constraints), 
-        0.01
-    );
-    auto path = gen.generate({squiggles::Pose(0, 0, 0), squiggles::Pose(1, 0, 10)});
-    // for(int i = 0; i < path.size(); i++) {
-    //     squiggles::ProfilePoint point = path[i];
-    //     std::cout << "Left: " << point.wheel_velocities[0] << "    Right: " << point.wheel_velocities[1] << std::endl;
-    // }
-
-    std::cout << path[1].wheel_velocities[0];
-    path[1].curvature;
+    profiler->setTarget({{0, 0, 0}, {0, 1, 0}}, false, true);
 
     // leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
     // rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
@@ -78,3 +65,4 @@ void opcontrol() {
     //     pros::delay(10);
     // }
 }
+*/

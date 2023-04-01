@@ -44,6 +44,7 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
         rightChassis->getEncoder(), 
         middleTracker
     )
+    .withOdometry()
     .buildOdometry();
 
 // std::shared_ptr<ryan::AsyncMotionProfiler> profiler = ryan::AsyncMotionProfilerBuilder()

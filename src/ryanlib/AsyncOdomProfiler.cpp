@@ -40,7 +40,9 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
     std::unique_ptr<LinearMotionProfile> iMove, 
-    const okapi::TimeUtil& iTimeUtil): timeUtil(iTimeUtil){
+    const okapi::TimeUtil& iTimeUtil): timeUtil(iTimeUtil)
+{
+    std::cout<<"constructor\n\n";
     chassis = std::move(iChassis);
     profiler = std::move(iMove);
     rate = std::move(timeUtil.getRate());
@@ -157,6 +159,7 @@ void AsyncOdomMotionProfiler::setTarget(okapi::QAngle iAngle, bool waitUntilSett
 }
 
 void AsyncOdomMotionProfiler::setTarget(std::initializer_list<squiggles::Pose> iPathPoints, bool withRamsete, bool waitUntilSettled) {
+    std::cout<<"setting target\n";
     ramseteEnabled = withRamsete;
 
     lock.take(5);
@@ -174,6 +177,7 @@ void AsyncOdomMotionProfiler::setTarget(std::initializer_list<squiggles::Pose> i
     if(waitUntilSettled){
         this->waitUntilSettled();
     }
+    std::cout<<"target setted\n";
 }
 
 void AsyncOdomMotionProfiler::stop(){
@@ -198,7 +202,7 @@ void AsyncOdomMotionProfiler::loop(){
         double rightPos = Math::tickToFt(rightMotor->getPosition(), chassis->getChassisScales(), chassis->getGearsetRatioPair());
         double rightVel = Math::rpmToFtps(rightMotor->getActualVelocity(), chassis->getChassisScales(), chassis->getGearsetRatioPair());
 
-        std::cout << lFilter.filter(leftVel) << std::endl;
+        // std::cout << lFilter.filter(leftVel) << std::endl;
         //std::cout << rFilter.filter(rightVel) << std::endl;
         //std::cout << leftPos << std::endl;
         //std::cout << rightPos << std::endl;
@@ -278,6 +282,7 @@ void AsyncOdomMotionProfiler::loop(){
                 double rightRPM = Math::ftpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
+                std::cout<<"left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
             }
         }
 
@@ -293,6 +298,7 @@ void AsyncOdomMotionProfiler::waitUntilSettled(){
 }
 
 AsyncOdomMotionProfilerBuilder::AsyncOdomMotionProfilerBuilder(){
+    std::cout<< "inside builder \n\n";
     linearInit = false;
     trajInit = false;
     driveInit = false;
