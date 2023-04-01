@@ -63,6 +63,7 @@ void opcontrol() {
     // }
 
     std::cout << path[1].wheel_velocities[0];
+    path[1].curvature;
 
     // leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
     // rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);

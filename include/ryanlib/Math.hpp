@@ -52,6 +52,9 @@ double ftpsToRPM(double ftps, okapi::ChassisScales scale, okapi::AbstractMotor::
  */
 double rpmToFtps(double rpm, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset);
 
+double mpsToRPM(double mps, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset);
+double rpmToMps(double rpm, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset);
+
 /**
  * @brief Converts ft to encoder ticks (aka. encoder degrees)
  * 
