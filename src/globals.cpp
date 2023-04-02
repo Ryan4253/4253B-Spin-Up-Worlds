@@ -52,16 +52,17 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
 //     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
 //     .build();
 
-squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
+squiggles::Constraints constraints(1, 1, 1);
+
+std::shared_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
+    constraints, 
+    std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+    0.01
+));
 
 std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler = ryan::AsyncOdomMotionProfilerBuilder()
     .withOutput(chassis)
     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
-    .withPathGen(std::make_unique<squiggles::SplineGenerator>(
-        constraints, 
-        std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
-        0.01
-    ))
     .build();
 
 std::shared_ptr<IterativePosPIDController> turnPID = std::make_shared<IterativePosPIDController>

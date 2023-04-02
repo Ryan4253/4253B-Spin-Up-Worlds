@@ -52,7 +52,8 @@ void autonomous() {
 }
 
 void opcontrol() {
-    profiler->setTarget({{0, 0, 0}, {0, 1, 0}}, false, false);
+    std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {1, 0, 0}});
+    profiler->setTarget(path, {0, 0, 0}, false, false);
     // profiler->setTarget(1_ft, true);
 
     // squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
