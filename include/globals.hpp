@@ -44,6 +44,7 @@ extern std::shared_ptr<ADIEncoder> middleTracker;
 
 // SUBSYSTEM CONTROLLERS
 extern std::shared_ptr<OdomChassisController> chassis;
+// extern std::shared_ptr<ryan::AsyncMotionProfiler> profiler;
 extern std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler;
 extern std::shared_ptr<IterativePosPIDController> turnPID;
 extern std::shared_ptr<Superstructure> superstructure;

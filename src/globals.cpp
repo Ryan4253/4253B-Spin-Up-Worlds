@@ -37,7 +37,7 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
     .withMotors(leftChassis, rightChassis)
     .withDimensions(
         {AbstractMotor::gearset::blue, 1.0}, 
-        {{2.75_in, 1.294_ft}, imev5BlueTPR}
+        {{3.25_in, 1.294_ft, 6_in, 2.75_in}, imev5BlueTPR}
     )
     .withSensors(
         leftChassis->getEncoder(), 
@@ -52,9 +52,16 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
 //     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
 //     .build();
 
+squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
+
 std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler = ryan::AsyncOdomMotionProfilerBuilder()
     .withOutput(chassis)
     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
+    .withPathGen(std::make_unique<squiggles::SplineGenerator>(
+        constraints, 
+        std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+        0.01
+    ))
     .build();
 
 std::shared_ptr<IterativePosPIDController> turnPID = std::make_shared<IterativePosPIDController>

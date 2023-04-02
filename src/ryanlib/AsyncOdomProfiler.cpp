@@ -8,14 +8,17 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
                                          std::unique_ptr<FFVelocityController> iRightLinear,
                                          std::unique_ptr<FFVelocityController> iLeftTrajectory,
                                          std::unique_ptr<FFVelocityController> iRightTrajectory,
+                                         std::unique_ptr<squiggles::SplineGenerator> iPathGen,
                                          const okapi::TimeUtil& iTimeUtil): timeUtil(iTimeUtil)
 {
+    std::cout << "\tAsyncOdomMotionProfiler :: Constructor\n";
     chassis = std::move(iChassis);
     profiler = std::move(iMove);
     leftLinear =  std::move(iLeftLinear);
     rightLinear = std::move(iRightLinear);
     leftTrajectory = std::move(iLeftTrajectory);
     rightTrajectory = std::move(iRightTrajectory);
+    squiggward = std::move(iPathGen);
     rate = std::move(timeUtil.getRate());
     timer = std::move(timeUtil.getTimer());
     linearCustom = true;
@@ -24,45 +27,47 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    ramsete = std::make_unique<lib4253::RamseteController>(iChassis);
+    std::unique_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis));
 
-    squiggles::Constraints constraints = squiggles::Constraints(
-        profiler->getConstraint().maxVelocity.convert(okapi::mps), 
-        profiler->getConstraint().maxAcceleration.convert(okapi::mps2), 
-        profiler->getConstraint().maxJerk.convert(okapi::mps3)
-    );
-    squiggward = std::make_unique<squiggles::SplineGenerator>(
-        constraints, 
-        std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
-        0.01
-    );
+    // squiggles::Constraints constraints = squiggles::Constraints(
+    //     profiler->getConstraint().maxVelocity.convert(okapi::mps), 
+    //     profiler->getConstraint().maxAcceleration.convert(okapi::mps2), 
+    //     profiler->getConstraint().maxJerk.convert(okapi::mps3)
+    // );
+    // std::unique_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
+    //     constraints, 
+    //     std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+    //     0.01
+    // ));
 }
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
     std::unique_ptr<LinearMotionProfile> iMove, 
+    std::unique_ptr<squiggles::SplineGenerator> iPathGen,
     const okapi::TimeUtil& iTimeUtil): timeUtil(iTimeUtil)
 {
-    std::cout<<"constructor\n\n";
+    std::cout << "    AsyncOdomMotionProfiler :: Constructor :)\n";
     chassis = std::move(iChassis);
     profiler = std::move(iMove);
+    squiggward = std::move(iPathGen);
     rate = std::move(timeUtil.getRate());
     timer = std::move(timeUtil.getTimer());
 
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    ramsete = std::make_unique<lib4253::RamseteController>(iChassis);
+    std::unique_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis));
 
-    squiggles::Constraints constraints = squiggles::Constraints(
-        profiler->getConstraint().maxVelocity.convert(okapi::mps), 
-        profiler->getConstraint().maxAcceleration.convert(okapi::mps2), 
-        profiler->getConstraint().maxJerk.convert(okapi::mps3)
-    );
-    squiggward = std::make_unique<squiggles::SplineGenerator>(
-        constraints, 
-        std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
-        0.01
-    );
+    // squiggles::Constraints constraints = squiggles::Constraints(
+    //     profiler->getConstraint().maxVelocity.convert(okapi::mps), 
+    //     profiler->getConstraint().maxAcceleration.convert(okapi::mps2), 
+    //     profiler->getConstraint().maxJerk.convert(okapi::mps3)
+    // );
+    // std::unique_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
+    //     constraints, 
+    //     std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+    //     0.01
+    // ));
 }
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
@@ -70,7 +75,10 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
                 std::unique_ptr<FFVelocityController> iLeft,
                 std::unique_ptr<FFVelocityController> iRight,
                 bool velFlag,
-                const okapi::TimeUtil& iTimeUtil): timeUtil(iTimeUtil){
+                std::unique_ptr<squiggles::SplineGenerator> iPathGen,
+                const okapi::TimeUtil& iTimeUtil): timeUtil(iTimeUtil)
+{
+    std::cout << "AsyncOdomMotionProfiler :: Constructor\n";
     chassis = std::move(iChassis);
     profiler = std::move(iMove);
     if(velFlag){
@@ -83,24 +91,25 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
         rightTrajectory = std::move(iRight);
         trajectoryCustom = true;
     }
+    squiggward = std::move(iPathGen);
     rate = std::move(timeUtil.getRate());
     timer = std::move(timeUtil.getTimer());
 
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    ramsete = std::make_unique<lib4253::RamseteController>(iChassis);
+    std::unique_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis));
 
-    squiggles::Constraints constraints = squiggles::Constraints(
-        profiler->getConstraint().maxVelocity.convert(okapi::mps), 
-        profiler->getConstraint().maxAcceleration.convert(okapi::mps2), 
-        profiler->getConstraint().maxJerk.convert(okapi::mps3)
-    );
-    squiggward = std::make_unique<squiggles::SplineGenerator>(
-        constraints, 
-        std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
-        0.01
-    );
+    // squiggles::Constraints constraints = squiggles::Constraints(
+    //     profiler->getConstraint().maxVelocity.convert(okapi::mps), 
+    //     profiler->getConstraint().maxAcceleration.convert(okapi::mps2), 
+    //     profiler->getConstraint().maxJerk.convert(okapi::mps3)
+    // );
+    // std::unique_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
+    //     constraints, 
+    //     std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+    //     0.01
+    // ));
 }
 
 void AsyncOdomMotionProfiler::setConstraint(const ProfileConstraint& iConstraint){
@@ -111,6 +120,7 @@ void AsyncOdomMotionProfiler::setConstraint(const ProfileConstraint& iConstraint
 }
 
 void AsyncOdomMotionProfiler::setTarget(okapi::QLength distance, bool waitUntilSettled){
+    std::cout << "AsyncOdomMotionProfiler :: Setting Target of " << distance.convert(okapi::foot) << " ft\n";
     lock.take(5);
     setState(OdomMotionProfileState::MOVE);
     profiler->setDistance(distance);
@@ -124,9 +134,11 @@ void AsyncOdomMotionProfiler::setTarget(okapi::QLength distance, bool waitUntilS
     if(waitUntilSettled){
         this->waitUntilSettled();
     }
+    std::cout << "done\n";
 }
 
 void AsyncOdomMotionProfiler::setTarget(const Trajectory& iPath, bool waitUntilSettled){
+    std::cout << "AsyncOdomMotionProfiler :: Setting Target of Trajectory\n";
     lock.take(5);
     setState(OdomMotionProfileState::FOLLOW);
     leftMotor->tarePosition();
@@ -143,6 +155,7 @@ void AsyncOdomMotionProfiler::setTarget(const Trajectory& iPath, bool waitUntilS
 }
 
 void AsyncOdomMotionProfiler::setTarget(okapi::QAngle iAngle, bool waitUntilSettled){
+    std::cout << "AsyncOdomMotionProfiler :: Setting Target of " << iAngle.convert(okapi::degree) << " deg\n";
     lock.take(5);
     setState(OdomMotionProfileState::TURN);
     profiler->setDistance(iAngle.convert(okapi::radian) * chassis->getChassisScales().wheelTrack/2);
@@ -158,29 +171,43 @@ void AsyncOdomMotionProfiler::setTarget(okapi::QAngle iAngle, bool waitUntilSett
     }
 }
 
-void AsyncOdomMotionProfiler::setTarget(std::initializer_list<squiggles::Pose> iPathPoints, bool withRamsete, bool waitUntilSettled) {
-    std::cout<<"setting target\n";
-    ramseteEnabled = withRamsete;
+void AsyncOdomMotionProfiler::setTarget(std::vector<squiggles::Pose> iPathPoints, bool withRamsete, bool waitUntilSettled) {
+    std::cout << "AsyncOdomMotionProfiler :: Setting Target of Squiggles Path\n";
 
     lock.take(5);
-    setState(OdomMotionProfileState::FOLLOW);
+    std::cout << "a\n";
+    setState(OdomMotionProfileState::SQUIGGLES_FOLLOW);
+    std::cout << "b\n";
     leftMotor->tarePosition();
+    std::cout << "c\n";
     rightMotor->tarePosition();
+    std::cout << "d\n";
     chassis->getModel()->tank(0, 0);
-    squigglesPath = squiggward->generate(iPathPoints);
-    std::vector<squiggles::Pose> poses = iPathPoints;
-    desiredSquigglesPose = poses[0];
-    maxTime = path.size() * 10 * okapi::millisecond + 0.02 * okapi::millisecond;
+    std::cout << "e\n";
+    squigglesPath = squiggward->generate({{1, 0, 0}, {0, 1, 0}});
+    std::cout << "out: " << squigglesPath[10].wheel_velocities[1];
+    // squiggward->generate(iPathPoints);
+    // squigglesPath = squiggward->generate(iPathPoints);
+    std::cout << "g\n";
+    desiredSquigglesPose = iPathPoints[0];
+    std::cout << "h\n";
+    ramseteEnabled = withRamsete;
+    std::cout << "i\n";
+    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.02 * okapi::second;
+    std::cout << "j\n";
     timer->placeMark();
+    std::cout << "k\n";
     lock.give();
 
+    std::cout<<"target setted\n";
     if(waitUntilSettled){
         this->waitUntilSettled();
     }
-    std::cout<<"target setted\n";
+    
 }
 
 void AsyncOdomMotionProfiler::stop(){
+    std::cout << "AsyncOdomMotionProfiler :: Stopping\n";
     lock.take(5);
     setState(OdomMotionProfileState::IDLE);
     (chassis->getModel())->tank(0, 0);
@@ -255,10 +282,15 @@ void AsyncOdomMotionProfiler::loop(){
             }
         }
         else if(getState() == OdomMotionProfileState::SQUIGGLES_FOLLOW) {
+            std::cout << "hello\n";
             squiggles::ProfilePoint point = squigglesPath[(int)(time.convert(okapi::millisecond) / 10)];
+            std::cout << "a\n";
             double leftVel = point.wheel_velocities[0];
+            std::cout << "b\n";
             double rightVel = point.wheel_velocities[1];
+            std::cout << "hi\n";
             if(ramseteEnabled) {
+                std::cout << "ramsete\n";
                 double desiredVelMPS = (leftVel + rightVel) / 2;
                 double desiredAngularVelRPS = (rightVel - leftVel) / chassis->getChassisScales().wheelTrack.convert(okapi::meter);
                 double deltaDist = desiredVelMPS * 0.01;
@@ -278,6 +310,7 @@ void AsyncOdomMotionProfiler::loop(){
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
             } else {
+                std::cout << "no ramsete\n";
                 double leftRPM = Math::ftpsToRPM(leftVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::ftpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);
@@ -298,7 +331,7 @@ void AsyncOdomMotionProfiler::waitUntilSettled(){
 }
 
 AsyncOdomMotionProfilerBuilder::AsyncOdomMotionProfilerBuilder(){
-    std::cout<< "inside builder \n\n";
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Building...\n\n";
     linearInit = false;
     trajInit = false;
     driveInit = false;
@@ -306,18 +339,21 @@ AsyncOdomMotionProfilerBuilder::AsyncOdomMotionProfilerBuilder(){
 }
 
 AsyncOdomMotionProfilerBuilder& AsyncOdomMotionProfilerBuilder::withOutput(std::shared_ptr<okapi::OdomChassisController> iChassis){
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Adding Output\n";
     chassis = std::move(iChassis);
     driveInit = true;
     return *this;
 }
 
 AsyncOdomMotionProfilerBuilder& AsyncOdomMotionProfilerBuilder::withProfiler(std::unique_ptr<LinearMotionProfile> iProfiler){
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Adding Profiler\n";
     profile = std::move(iProfiler);
     profileInit = true;
     return *this;
 }
 
 AsyncOdomMotionProfilerBuilder& AsyncOdomMotionProfilerBuilder::withLinearController(FFVelocityController iLeft, FFVelocityController iRight){
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Adding Linear Controller\n";
     leftL = iLeft, rightL = iRight;
     linearInit = true;
     return *this;
@@ -325,52 +361,69 @@ AsyncOdomMotionProfilerBuilder& AsyncOdomMotionProfilerBuilder::withLinearContro
 }
 
 AsyncOdomMotionProfilerBuilder& AsyncOdomMotionProfilerBuilder::withTrajectoryController(FFVelocityController iLeft, FFVelocityController iRight){
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Adding Trajectory Controller\n";
     leftT = iLeft, rightT = iRight;
     trajInit = true;
     return *this;
 }
 
+AsyncOdomMotionProfilerBuilder& AsyncOdomMotionProfilerBuilder::withPathGen(std::unique_ptr<squiggles::SplineGenerator> iPathGen){
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Adding Path Gen\n";
+    pathGen = std::move(iPathGen);
+    pathGenInit = true;
+    return *this;
+}
+
 std::shared_ptr<AsyncOdomMotionProfiler> AsyncOdomMotionProfilerBuilder::build(){
-    if(driveInit && profileInit && linearInit && trajInit){
+    std::cout << "AsyncOdomMotionProfilerBuilder :: Finalizing Build...\n";
+    if(driveInit && profileInit && linearInit && trajInit && pathGenInit){
         std::shared_ptr<AsyncOdomMotionProfiler> ret(new AsyncOdomMotionProfiler(std::move(chassis), 
                                             std::move(profile), 
                                             std::make_unique<FFVelocityController>(leftL), 
                                             std::make_unique<FFVelocityController>(rightL),
                                             std::make_unique<FFVelocityController>(leftT), 
                                             std::make_unique<FFVelocityController>(rightT),
+                                            std::move(pathGen),
                                             okapi::TimeUtilFactory::createDefault()));
 
         ret->startTask();
+        std::cout << "AsyncOdomMotionProfilerBuilder :: Build Successful!\n\n";
         return std::move(ret);
     }
-    else if(driveInit && profileInit && linearInit){
+    else if(driveInit && profileInit && linearInit && pathGenInit){
         std::shared_ptr<AsyncOdomMotionProfiler> ret(new AsyncOdomMotionProfiler(std::move(chassis), 
                                     std::move(profile), 
                                     std::make_unique<FFVelocityController>(leftL), 
                                     std::make_unique<FFVelocityController>(rightL),
                                     true,
+                                    std::move(pathGen),
                                     okapi::TimeUtilFactory::createDefault()));
 
         ret->startTask();
+        std::cout << "AsyncOdomMotionProfilerBuilder :: Build Successful!\n\n";
         return std::move(ret);
     }
-    else if(driveInit && profileInit && trajInit){
+    else if(driveInit && profileInit && trajInit && pathGenInit){
         std::shared_ptr<AsyncOdomMotionProfiler> ret(new AsyncOdomMotionProfiler(std::move(chassis), 
                                     std::move(profile), 
                                     std::make_unique<FFVelocityController>(leftT), 
                                     std::make_unique<FFVelocityController>(rightT),
                                     false,
+                                    std::move(pathGen),
                                     okapi::TimeUtilFactory::createDefault()));
 
         ret->startTask();
+        std::cout << "AsyncOdomMotionProfilerBuilder :: Build Successful!\n\n";
         return std::move(ret);
     }
-    else if(driveInit && profileInit){
+    else if(driveInit && profileInit && pathGenInit){
         std::shared_ptr<AsyncOdomMotionProfiler> ret(new AsyncOdomMotionProfiler(std::move(chassis), 
                                     std::move(profile), 
+                                    std::move(pathGen),
                                     okapi::TimeUtilFactory::createDefault()));
 
         ret->startTask();
+        std::cout << "AsyncOdomMotionProfilerBuilder :: Build Successful!\n\n";
         return std::move(ret);
     }
     else{

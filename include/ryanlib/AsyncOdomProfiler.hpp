@@ -49,6 +49,7 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
                         std::unique_ptr<FFVelocityController> iRightLinear,
                         std::unique_ptr<FFVelocityController> iLeftTrajectory,
                         std::unique_ptr<FFVelocityController> iRightTrajectory,
+                        std::unique_ptr<squiggles::SplineGenerator> iPathGen,
                         const okapi::TimeUtil& iTimeUtil);
 
     /**
@@ -60,6 +61,7 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
      */
     AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
                     std::unique_ptr<LinearMotionProfile> iMove, 
+                    std::unique_ptr<squiggles::SplineGenerator> iPathGen,
                     const okapi::TimeUtil& iTimeUtil);
 
     /**
@@ -77,6 +79,7 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
                     std::unique_ptr<FFVelocityController> iLeft,
                     std::unique_ptr<FFVelocityController> iRight,
                     bool velFlag,
+                    std::unique_ptr<squiggles::SplineGenerator> iPathGen,
                     const okapi::TimeUtil& iTimeUtil);
 
     void operator=(const AsyncOdomMotionProfiler& rhs) = delete;
@@ -120,7 +123,7 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
      */ 
     void setTarget(okapi::QAngle iAngle, bool waitUntilSettled = false);
 
-    void setTarget(std::initializer_list<squiggles::Pose> iPathPoints, bool withRamsete = false, bool waitUntilSettled = false);
+    void setTarget(std::vector<squiggles::Pose> iPathPoints, bool withRamsete = false, bool waitUntilSettled = false);
 
     /**
      * @brief stop the chassis from moving
@@ -222,6 +225,8 @@ class AsyncOdomMotionProfilerBuilder{
      * @return AsyncOdomMotionProfilerBuilder& 
      */
     AsyncOdomMotionProfilerBuilder& withTrajectoryController(FFVelocityController iLeft, FFVelocityController iRight);
+
+    AsyncOdomMotionProfilerBuilder& withPathGen(std::unique_ptr<squiggles::SplineGenerator> iPathGen);
 
     /**
      * @brief builds the async motion profiler object with the specified parameters. The thread is started automaically

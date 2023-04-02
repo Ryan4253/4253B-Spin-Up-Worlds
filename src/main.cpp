@@ -1,6 +1,8 @@
 #include "main.h"
 
 void initialize() {
+    std::cout << "hello world \n\n";
+
     pros::lcd::initialize();
 
     // Auton Selector
@@ -14,7 +16,7 @@ void initialize() {
 void disabled() {}
 
 void competition_initialize() {}
-/*
+
 void autonomous() {
     leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
@@ -50,7 +52,18 @@ void autonomous() {
 }
 
 void opcontrol() {
-    profiler->setTarget({{0, 0, 0}, {0, 1, 0}}, false, true);
+    profiler->setTarget({{0, 0, 0}, {0, 1, 0}}, false, false);
+    // profiler->setTarget(1_ft, true);
+
+    // squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
+    // std::unique_ptr<squiggles::SplineGenerator> squiggward = std::make_unique<squiggles::SplineGenerator>(
+    //     constraints, 
+    //     std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+    //     0.01
+    // );
+    // std::vector<squiggles::Pose> iPathPoints = {{0, 0, 0}, {0, 1, 0}};
+    // squiggward->generate(iPathPoints);
+    // std::cout << "done :)\n";
 
     // leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
     // rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
@@ -65,4 +78,3 @@ void opcontrol() {
     //     pros::delay(10);
     // }
 }
-*/
