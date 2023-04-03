@@ -2,11 +2,10 @@
 
 namespace lib4253{
 
-RamseteController::RamseteController(std::shared_ptr<OdomChassisController> iChassis, double iB, double iZeta){
+RamseteController::RamseteController(QLength iTrackWidth, double iB, double iZeta){
     b = iB;
     zeta = iZeta;
-    chassis = std::move(iChassis);
-    trackWidth = chassis->getChassisScales().wheelTrack;
+    trackWidth = iTrackWidth;
 }
 
 std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(QSpeed vel, QAngularSpeed angularVel, const Pose& error){
@@ -23,8 +22,8 @@ std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(QSpeed vel, QAngu
     QSpeed v{(vRef * cos(eTheta) + k * eX) * okapi::mps};
     QAngularSpeed omega{(omegaRef + k * eTheta + b * vRef * Math::sinc(eTheta) * eY) * okapi::radps};
 
-    QSpeed vl = (2 * vl + ((omega.convert(radps) * chassis->getChassisScales().wheelTrack.convert(meter)) * mps)) / 2;
-    QSpeed vr = (2 * vl - ((omega.convert(radps) * chassis->getChassisScales().wheelTrack.convert(meter)) * mps)) / 2;
+    QSpeed vl = (2 * vl + ((omega.convert(radps) * trackWidth.convert(meter)) * mps)) / 2;
+    QSpeed vr = (2 * vl - ((omega.convert(radps) * trackWidth.convert(meter)) * mps)) / 2;
 
     return {vl, vr};
 }

@@ -25,7 +25,7 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    std::unique_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis));
+    std::shared_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis->getChassisScales().wheelTrack));
 }
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
@@ -41,7 +41,7 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    std::unique_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis));
+    std::shared_ptr<lib4253::RamseteController> ramsete = std::make_shared<lib4253::RamseteController>(chassis->getChassisScales().wheelTrack);
 }
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
@@ -70,7 +70,7 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    std::unique_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis));
+    std::shared_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis->getChassisScales().wheelTrack));
 }
 
 void AsyncOdomMotionProfiler::setConstraint(const ProfileConstraint& iConstraint){
@@ -134,6 +134,7 @@ void AsyncOdomMotionProfiler::setTarget(okapi::QAngle iAngle, bool waitUntilSett
 
 void AsyncOdomMotionProfiler::setTarget(std::vector<squiggles::ProfilePoint> iPath, squiggles::Pose iInitialPose, bool withRamsete, bool waitUntilSettled) {
     std::cout << "AsyncOdomMotionProfiler :: Setting Target of Squiggles Path\n";
+    ramsete->getTargetVelocity(1 * okapi::mps, 1 * okapi::radps, {0.1 * okapi::meter, 0.1 * okapi::meter, 0.1 * okapi::radian});
 
     lock.take(5);
     setState(OdomMotionProfileState::SQUIGGLES_FOLLOW);

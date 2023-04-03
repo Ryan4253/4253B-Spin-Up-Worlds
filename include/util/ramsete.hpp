@@ -15,7 +15,7 @@ using namespace okapi;
 class RamseteController{
     public:
     RamseteController(
-        std::shared_ptr<OdomChassisController> iChassis,
+        QLength iTrackWidth,
         double iB = 2.0,
         double iZeta = 0.7
     );
@@ -23,7 +23,6 @@ class RamseteController{
     std::pair<QSpeed, QSpeed> getTargetVelocity(QSpeed vel, QAngularSpeed angularVel, const Pose& error);
 
     private:
-    std::shared_ptr<OdomChassisController> chassis;
     Pose tolerance;
     double b;
     double zeta;
