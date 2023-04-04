@@ -25,7 +25,7 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    std::shared_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis->getChassisScales().wheelTrack));
+    ramsete = std::make_unique<lib4253::RamseteController>(chassis->getChassisScales().wheelTrack);
 }
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
@@ -41,7 +41,7 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    std::shared_ptr<lib4253::RamseteController> ramsete = std::make_shared<lib4253::RamseteController>(chassis->getChassisScales().wheelTrack);
+    ramsete = std::make_unique<lib4253::RamseteController>(chassis->getChassisScales().wheelTrack);
 }
 
 AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChassisController> iChassis, 
@@ -70,7 +70,7 @@ AsyncOdomMotionProfiler::AsyncOdomMotionProfiler(std::shared_ptr<okapi::OdomChas
     leftMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getLeftSideMotor());
     rightMotor = std::move(std::static_pointer_cast<okapi::SkidSteerModel>(chassis->getModel())->getRightSideMotor());
 
-    std::shared_ptr<lib4253::RamseteController> ramsete(new lib4253::RamseteController(chassis->getChassisScales().wheelTrack));
+    ramsete = std::make_unique<lib4253::RamseteController>(chassis->getChassisScales().wheelTrack);
 }
 
 void AsyncOdomMotionProfiler::setConstraint(const ProfileConstraint& iConstraint){

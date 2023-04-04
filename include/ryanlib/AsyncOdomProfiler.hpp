@@ -145,7 +145,7 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
     std::unique_ptr<FFVelocityController> leftTrajectory{nullptr};
     std::unique_ptr<FFVelocityController> rightTrajectory{nullptr};
 
-    std::shared_ptr<lib4253::RamseteController> ramsete{nullptr};
+    std::unique_ptr<lib4253::RamseteController> ramsete{nullptr};
 
     okapi::TimeUtil timeUtil;
     std::unique_ptr<okapi::AbstractRate> rate;
