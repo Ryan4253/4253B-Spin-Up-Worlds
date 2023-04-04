@@ -233,13 +233,15 @@ void AsyncOdomMotionProfiler::loop(){
             double leftVel = point.wheel_velocities[0];
             double rightVel = point.wheel_velocities[1];
             if(ramseteEnabled) {
-                std::cout << "ramsete\n";
                 double desiredVelMPS = (leftVel + rightVel) / 2;
                 double desiredAngularVelRPS = (rightVel - leftVel) / chassis->getChassisScales().wheelTrack.convert(okapi::meter);
                 double deltaDist = desiredVelMPS * 0.01;
                 double deltaAngle = desiredAngularVelRPS * 0.01;
-                squiggles::Pose deltaPose = {(std::sin(deltaAngle) * deltaDist), (std::sin(deltaAngle) * deltaDist), deltaAngle};
-                desiredSquigglesPose = {desiredSquigglesPose.x + deltaPose.x, desiredSquigglesPose.y + deltaPose.y, desiredSquigglesPose.yaw + deltaPose.yaw};
+                double alteredDesiredAngle = desiredSquigglesPose.yaw + deltaAngle * 0.5;
+                squiggles::Pose deltaPose = {(std::cos(alteredDesiredAngle) * deltaDist), (std::sin(alteredDesiredAngle) * deltaDist), deltaAngle};
+                desiredSquigglesPose = {desiredSquigglesPose.x + deltaPose.x, desiredSquigglesPose.y + deltaPose.y, desiredSquigglesPose.yaw + deltaAngle};
+                // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << "," << desiredSquigglesPose.yaw << ")\n";
+                // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
                 squiggles::Pose currPose = {chassis->getState().x.convert(okapi::meter), chassis->getState().y.convert(okapi::meter), chassis->getState().theta.convert(okapi::radian)};
                 squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};
 
@@ -257,7 +259,7 @@ void AsyncOdomMotionProfiler::loop(){
                 double rightRPM = Math::ftpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
-                std::cout<<"left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
+                // std::cout<<"left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
             }
         }
 
