@@ -21,12 +21,12 @@ double Math::rpmToFtps(double rpm, okapi::ChassisScales scale, okapi::AbstractMo
     return rpm / 60 / gearset.ratio * (scale.wheelDiameter.convert(okapi::inch) * M_PI) / 12;
 }
 
-double mpsToRPM(double mps, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset) {
-    return Math::ftpsToRPM(mps * 3.281, scale, gearset);
+double Math::mpsToRPM(double mps, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset) {
+    return ftpsToRPM(mps * 3.281, scale, gearset);
 }
 
-double rpmToMps(double rpm, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset) {
-    return Math::rpmToFtps(rpm, scale, gearset) / 3.281;
+double Math::rpmToMps(double rpm, okapi::ChassisScales scale, okapi::AbstractMotor::GearsetRatioPair gearset) {
+    return rpmToFtps(rpm, scale, gearset) / 3.281;
 }
 
 

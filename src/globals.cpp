@@ -52,7 +52,11 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
 //     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
 //     .build();
 
-squiggles::Constraints constraints(1, 1, 1);
+QSpeed theoreticalMaxSpeed = 5.672_ftps;
+QSpeed profileMaxVel = 5_ftps;
+QAcceleration profileMaxAccel = 10_ftps2;
+QJerk profileMaxJerk = 34_ftps3;
+squiggles::Constraints constraints(profileMaxVel.convert(mps), profileMaxAccel.convert(mps2), profileMaxJerk.convert(mps3));
 
 std::shared_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
     constraints, 

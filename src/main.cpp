@@ -52,7 +52,18 @@ void autonomous() {
 }
 
 void opcontrol() {
-    std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {1, 1, 0}});
+    std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {2, 0, 0}});
+    double prevVel = 0.0;
+    double prevAccel = 0.0;
+    for(int i = 0; i < path.size(); i++) {
+        double vel = (path[i].wheel_velocities[0] + path[i].wheel_velocities[1]) / 2;
+        double accel = (vel - prevVel) * 100;
+        double jerk = (accel - prevAccel) * 100;
+        prevVel = vel;
+        prevAccel = accel;
+        std::cout << "Vel: " << vel << "    Accel: " << accel << "    Jerk: " << jerk << std::endl;
+        pros::delay(10);
+    }
     profiler->setTarget(path, {0, 0, 0}, true, true);
     // profiler->setTarget(1_ft, true);
 

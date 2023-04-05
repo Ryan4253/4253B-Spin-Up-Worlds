@@ -255,8 +255,8 @@ void AsyncOdomMotionProfiler::loop(){
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
             } else {
-                double leftRPM = Math::ftpsToRPM(leftVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
-                double rightRPM = Math::ftpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
+                double leftRPM = Math::mpsToRPM(leftVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
+                double rightRPM = Math::mpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
                 // std::cout<<"left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
