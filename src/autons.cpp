@@ -1,3 +1,9 @@
 #include "autons.hpp"
 
-void autonA() {}
+void Autons::doNothing() {}
+
+void Autons::jonathan() {}
+
+void Autons::simple() {}
+
+void Autons::skills() {}

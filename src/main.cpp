@@ -1,16 +1,12 @@
 #include "main.h"
+#include "autoSelect/selection.h"
 
 void initialize() {
-    std::cout << "hello world \n\n";
-
-    pros::lcd::initialize();
-
     // Auton Selector
-    const char *autons[3] = {"a", "b", "c"};
-    Selector::init(180, 1, autons);
+    selector::init(); 
 
     imu->calibrate();
-    // catapult->startTask();
+    superstructure->startTask();
 }
 
 void disabled() {}
@@ -20,39 +16,39 @@ void competition_initialize() {}
 void autonomous() {
     leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
-    switch (Selector::auton) {
+    switch (selector::auton) {
         case 0:
-            // doNothing();
+            Autons::skills();
             break;
 
         case 1:
-            autonA();
+            Autons::doNothing();
             break;
 
         case 2:
-            // redAutonB();
+            Autons::simple();
             break;
 
         case 3:
-            // redAutonC();
+            Autons::jonathan();
             break;
 
         case -1:
-            // blueAutonA();
+            Autons::doNothing();
             break;
 
         case -2:
-            // blueAutonB();
+            Autons::simple();
             break;
 
         case -3:
-            // blueAutonC();
+            Autons::jonathan();
             break;
-        }
+    }
 }
 
 void opcontrol() {
-    std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {2, 0, 0}});
+    // std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {2, 0, 0}});
     // double prevVel = 0.0;
     // double prevAccel = 0.0;
     // for(int i = 0; i < path.size(); i++) {
@@ -66,7 +62,7 @@ void opcontrol() {
     //     pros::delay(10);
     // }
 
-    profiler->setTarget(path, {0, 0, 0}, false, true);
+    // profiler->setTarget(path, {0, 0, 0}, false, true);
     // profiler->setTarget(1_ft, true);
 
     // squiggles::Constraints constraints = squiggles::Constraints(1, 1, 1);
@@ -79,16 +75,16 @@ void opcontrol() {
     // squiggward->generate(iPathPoints);
     // std::cout << "done :)\n";
 
-    // leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
-    // rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+    leftChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
+    rightChassis->setBrakeMode(AbstractMotor::brakeMode::coast);
 
-    // auto model = std::static_pointer_cast<SkidSteerModel>(chassis->getModel());
-    // while(true) {
-    //     model->curvature(
-    //         master->getAnalog(ControllerAnalog::leftY), 
-    //         master->getAnalog(ControllerAnalog::rightX),
-    //         DEADBAND
-    //     );
-    //     pros::delay(10);
-    // }
+    auto model = std::static_pointer_cast<SkidSteerModel>(chassis->getModel());
+    while(true) {
+        model->curvature(
+            master->getAnalog(ControllerAnalog::leftY), 
+            master->getAnalog(ControllerAnalog::rightX),
+            DEADBAND
+        );
+        pros::delay(10);
+    }
 }

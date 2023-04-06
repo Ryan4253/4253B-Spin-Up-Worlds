@@ -79,9 +79,8 @@ void opcontrol(void);
 #include "subsystems/superstructure.hpp"
 #include "globals.hpp"
 #include "autons.hpp"
-#include "gui/autonselector.hpp"
-#include <iostream>
-#include <ostream>
+// #include <iostream>
+// #include <ostream>
 #endif
 
 #endif  // _PROS_MAIN_H_

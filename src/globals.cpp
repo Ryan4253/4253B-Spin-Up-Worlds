@@ -11,8 +11,8 @@ Motor rightFront(7, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUn
 Motor rightMid(6, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
 Motor rightBack(5, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
 
-Motor leftSuperstructure(1, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
-Motor rightSuperstructure(2, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
+std::shared_ptr<Motor> leftSuperstructure(new Motor(1, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees));
+std::shared_ptr<Motor> rightSuperstructure(new Motor(2, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees));
 
 std::shared_ptr<MotorGroup> leftChassis(new MotorGroup({leftFront, leftMid, leftBack}));
 std::shared_ptr<MotorGroup> rightChassis(new MotorGroup({rightFront, rightMid, rightBack}));
