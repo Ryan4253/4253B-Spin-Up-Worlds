@@ -19,7 +19,9 @@ class Solenoid {
      * @param iPort solinoid port
      * @param initState initial state of the piston
      */
-    Solenoid(char iPort, bool initState = false);
+    Solenoid(std::uint8_t iPort, bool initState = false);
+
+    Solenoid(pros::ext_adi_port_pair_t iPortPair, bool initState = false);
 
     /**
      * @brief Destroys the Solenoid object

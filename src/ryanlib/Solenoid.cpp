@@ -2,7 +2,11 @@
 
 namespace ryan{
 
-Solenoid::Solenoid(char iPort, bool initState):piston(iPort), state(initState){
+Solenoid::Solenoid(std::uint8_t iPort, bool initState) : piston(iPort), state(initState){
+    piston.set_value(state);
+}
+
+Solenoid::Solenoid(pros::ext_adi_port_pair_t iPortPair, bool initState) : piston(iPortPair), state(initState) {
     piston.set_value(state);
 }
 
