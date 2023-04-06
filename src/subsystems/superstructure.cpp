@@ -1,11 +1,13 @@
 #include "subsystems/superstructure.hpp"
 
-Superstructure::Superstructure(const std::shared_ptr<okapi::MotorGroup> &imotors,
+Superstructure::Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
+                               const std::shared_ptr<okapi::Motor> &irightMotor,
                                const std::shared_ptr<ryan::Solenoid> &ichassisSolenoid, 
                                const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid, 
                                const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch)
 {
-    motors = std::move(imotors);
+    leftMotor = std::move(ileftMotor);
+    rightMotor = std::move(irightMotor);
     chassisSolenoid = std::move(ichassisSolenoid);
     puncherSolenoid = std::move(ipuncherSolenoid);
     puncherLimitSwitch = std::move(ipuncherLimitSwitch);
@@ -30,11 +32,19 @@ void Superstructure::fire() {
     controlState = ControlState::AUTOMATIC;
     fired = true;
     wantToIntake = false;
+
 }
 
-void Superstructure::intake() {
+void Superstructure::intake(bool iwantToIntake) {
     controlState = ControlState::AUTOMATIC;
-    wantToIntake = true;
+    wantToIntake = iwantToIntake;
+}
+
+void Superstructure::drive(bool iwantToDrive, double ileftSpeed, double irightSpeed) {
+    controlState = ControlState::AUTOMATIC;
+    wantToDrive = iwantToDrive;
+    leftSpeed = ileftSpeed;
+    rightSpeed = irightSpeed;
 }
 
 void Superstructure::setPuncherSpeed(double ispeed) {
@@ -61,28 +71,40 @@ void Superstructure::loop() {
                         puncherSolenoid->set(true);
                     }
                 }
-                motors->moveVoltage(jogSpeed * 12000);
+                leftMotor->moveVoltage(jogSpeed * 12000);
+                rightMotor->moveVoltage(jogSpeed * 12000);
                 break;
 
             case ControlState::AUTOMATIC:
+                driving = false;
                 if (!puncherLimitSwitch->isPressed()) {
                     fired = false;
                 }
                 if ((puncherLimitSwitch->isPressed() && fired) || (!puncherLimitSwitch->isPressed())) {
                     superstructureState = SuperstructureState::LOADING;
-                    motors->moveVoltage(12000 * puncherSpeed);
+                    leftMotor->moveVoltage(puncherSpeed * 12000);
+                    rightMotor->moveVoltage(puncherSpeed * 12000);
                 } else {
                     superstructureState = SuperstructureState::LOADED;
-                    motors->moveVoltage(0);
+                    leftMotor->moveVoltage(0);
+                    rightMotor->moveVoltage(0);
                 }
-                if(wantToIntake && superstructureState == SuperstructureState::LOADED) {
-                    superstructureState = SuperstructureState::INTAKING;
-                    motors->moveVoltage(-12000 * intakeSpeed);
+                if(wantToIntake && superstructureState != SuperstructureState::LOADING) {
+                    leftMotor->moveVoltage(intakeSpeed * -12000);
+                    rightMotor->moveVoltage(intakeSpeed * -12000);
+                } else if(wantToDrive && superstructureState != SuperstructureState::LOADING) {
+                    driving = true;
+                    leftMotor->moveVoltage(leftSpeed * 12000);
+                    rightMotor->moveVoltage(rightSpeed * 12000);
                 }
-                if(superstructureState == SuperstructureState::LOADED) {
-                    chassisSolenoid->set(false);
-                } else {
+                if(driving) {
                     chassisSolenoid->set(true);
+                    leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+                    rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+                } else {
+                    chassisSolenoid->set(false);
+                    leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+                    rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
                 }
                 break;
         }

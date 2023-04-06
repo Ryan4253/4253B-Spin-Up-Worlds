@@ -7,7 +7,7 @@
 #include "ryanlib/TaskWrapper.hpp"
 #include "ryanlib/Solenoid.hpp"
 
-enum class SuperstructureState { INTAKING, LOADED, LOADING, IDLE };
+enum class SuperstructureState { LOADED, LOADING, IDLE };
 
 enum class ControlState { MANUAL, AUTOMATIC };
 
@@ -17,7 +17,8 @@ template class ryan::StateMachine<SuperstructureState>;
 
 class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<SuperstructureState> {
     public:
-    Superstructure(const std::shared_ptr<okapi::MotorGroup> &imotors,
+    Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
+                   const std::shared_ptr<okapi::Motor> &irightMotor,
                    const std::shared_ptr<ryan::Solenoid> &ichassisSolenoid, 
                    const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid, 
                    const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch);
@@ -25,7 +26,8 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     void disable(bool idisabled);
     void jog(double ipercentSpeed, PistonState ipistonState);
     void fire();
-    void intake();
+    void intake(bool iwantToIntake);
+    void drive(bool iwantToDrive, double ileftSpeed, double irightSpeed);
     void setPuncherSpeed(double ispeed);
     void setIntakeSpeed(double ispeed);
     void autonomousEnabled(bool iisEnabled);
@@ -33,16 +35,18 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     void loop() override;
 
     protected:
-    std::shared_ptr<okapi::MotorGroup> motors;
+    std::shared_ptr<okapi::Motor> leftMotor, rightMotor;
     std::shared_ptr<ryan::Solenoid> chassisSolenoid;
     std::shared_ptr<ryan::Solenoid> puncherSolenoid;
     std::shared_ptr<okapi::ADIButton> puncherLimitSwitch;
 
     private:
-    bool isDisabled, fired, wantToIntake, isAutonomousEnabled;
+    bool isDisabled, fired, wantToIntake, wantToDrive, isAutonomousEnabled, driving;
     double jogSpeed{0.0};
     double puncherSpeed{1.0};
     double intakeSpeed{1.0};
+    double leftSpeed{0.0};
+    double rightSpeed{0.0};
     ControlState controlState;
     PistonState pistonState;
     SuperstructureState superstructureState;

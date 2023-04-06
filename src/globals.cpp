@@ -17,8 +17,6 @@ Motor rightSuperstructure(2, false, AbstractMotor::gearset::blue, AbstractMotor:
 std::shared_ptr<MotorGroup> leftChassis(new MotorGroup({leftFront, leftMid, leftBack}));
 std::shared_ptr<MotorGroup> rightChassis(new MotorGroup({rightFront, rightMid, rightBack}));
 
-std::shared_ptr<MotorGroup> superstructureMotors(new MotorGroup({leftSuperstructure, rightSuperstructure}));
-
 // SOLENOIDS
 std::shared_ptr<ryan::Solenoid> chassisSolenoid = std::make_shared<ryan::Solenoid>('A');
 std::shared_ptr<ryan::Solenoid> puncherSolenoid = std::make_shared<ryan::Solenoid>('B');
@@ -37,13 +35,13 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
     .withMotors(leftChassis, rightChassis)
     .withDimensions(
         {AbstractMotor::gearset::blue, 1.0}, 
-        {{3.25_in, 1.294_ft, 6_in, 2.75_in}, imev5BlueTPR}
+        {{3.25_in, 1.294_ft/*, 6_in, 2.75_in*/}, imev5BlueTPR}
     )
-    .withSensors(
-        leftChassis->getEncoder(), 
-        rightChassis->getEncoder(), 
-        middleTracker
-    )
+    // .withSensors(
+    //     leftChassis->getEncoder(), 
+    //     rightChassis->getEncoder(), 
+    //     middleTracker
+    // )
     .withOdometry()
     .buildOdometry();
 
@@ -55,7 +53,7 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
 QSpeed theoreticalMaxSpeed = 5.672_ftps;
 QSpeed profileMaxVel = 5_ftps;
 QAcceleration profileMaxAccel = 10_ftps2;
-QJerk profileMaxJerk = 34_ftps3;
+QJerk profileMaxJerk = 1_ftps3;
 squiggles::Constraints constraints(profileMaxVel.convert(mps), profileMaxAccel.convert(mps2), profileMaxJerk.convert(mps3));
 
 std::shared_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
@@ -73,4 +71,4 @@ std::shared_ptr<IterativePosPIDController> turnPID = std::make_shared<IterativeP
     (0.037, 0.0, 0.00065, 0, TimeUtilFactory::withSettledUtilParams(1, 2, 100_ms));
 
 std::shared_ptr<Superstructure> superstructure = std::make_shared<Superstructure>
-    (superstructureMotors, chassisSolenoid, puncherSolenoid, puncherLimitSwitch);
+    (leftSuperstructure, rightSuperstructure, chassisSolenoid, puncherSolenoid, puncherLimitSwitch);

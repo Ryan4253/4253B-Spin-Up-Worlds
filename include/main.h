@@ -80,7 +80,8 @@ void opcontrol(void);
 #include "globals.hpp"
 #include "autons.hpp"
 #include "gui/autonselector.hpp"
-//#include <iostream>
+#include <iostream>
+#include <ostream>
 #endif
 
 #endif  // _PROS_MAIN_H_

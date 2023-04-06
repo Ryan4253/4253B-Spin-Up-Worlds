@@ -144,7 +144,7 @@ void AsyncOdomMotionProfiler::setTarget(std::vector<squiggles::ProfilePoint> iPa
     squigglesPath = iPath;
     desiredSquigglesPose = iInitialPose;
     ramseteEnabled = withRamsete;
-    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.02 * okapi::second;
+    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.02 * okapi::millisecond;
     timer->placeMark();
     lock.give();
 
@@ -229,7 +229,9 @@ void AsyncOdomMotionProfiler::loop(){
             }
         }
         else if(getState() == OdomMotionProfileState::SQUIGGLES_FOLLOW) {
-            squiggles::ProfilePoint point = squigglesPath[(int)(time.convert(okapi::millisecond) / 10)];
+            int i = (int)(time.convert(okapi::millisecond) / 10);
+            if(i > squigglesPath.size()-1) i = squigglesPath.size()-1; 
+            squiggles::ProfilePoint point = squigglesPath[i];
             double leftVel = point.wheel_velocities[0];
             double rightVel = point.wheel_velocities[1];
             if(ramseteEnabled) {
@@ -259,7 +261,7 @@ void AsyncOdomMotionProfiler::loop(){
                 double rightRPM = Math::mpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
-                // std::cout<<"left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
+                // std::cout << "left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
             }
         }
 
