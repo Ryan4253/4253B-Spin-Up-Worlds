@@ -63,8 +63,12 @@ void Superstructure::loop() {
             case ControlState::MANUAL:
                 if(pistonState == PistonState::DISENGAGED) {
                     chassisSolenoid->set(true);
+                    leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+                    rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
                 } else {
                     chassisSolenoid->set(false);
+                    leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+                    rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
                     if(pistonState == PistonState::INTAKE) {
                         puncherSolenoid->set(false);
                     } else {

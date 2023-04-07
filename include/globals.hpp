@@ -33,18 +33,13 @@ extern std::shared_ptr<MotorGroup> rightChassis;
 extern std::shared_ptr<MotorGroup> superstructureMotors;
 
 // PNEUMAICS
-extern std::shared_ptr<ryan::Solenoid> chassisSolenoid;
-extern std::shared_ptr<ryan::Solenoid> puncherSolenoid;
-extern std::shared_ptr<ryan::Solenoid> expansionSolenoid;
+extern std::shared_ptr<ryan::Solenoid> intakeSolenoid; 
 
 // SENSORS
 extern std::shared_ptr<IMU> imu;
-extern std::shared_ptr<ADIButton> puncherLimitSwitch;
-extern std::shared_ptr<ADIEncoder> middleTracker;
 
 // SUBSYSTEM CONTROLLERS
 extern std::shared_ptr<OdomChassisController> chassis;
-// extern std::shared_ptr<ryan::AsyncMotionProfiler> profiler;
 extern std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler;
 extern std::shared_ptr<IterativePosPIDController> turnPID;
 extern std::shared_ptr<Superstructure> superstructure;
