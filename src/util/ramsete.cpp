@@ -8,22 +8,24 @@ RamseteController::RamseteController(QLength iTrackWidth, double iB, double iZet
     trackWidth = iTrackWidth;
 }
 
-std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(QSpeed vel, QAngularSpeed angularVel, const Pose& error){
+std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(const Pose& currentPose, const Pose& poseRef, QSpeed vel, QAngularSpeed angularVel){
+    Pose poseError = poseRef.relativeTo(currentPose);
+
     // Aliases for equation readability
-    double eX = error.X().convert(okapi::meter);
-    double eY = error.Y().convert(okapi::meter);
-    double eTheta = error.Theta().convert(okapi::radian);
-    double vRef = vel.convert(okapi::mps);
-    double omegaRef = angularVel.convert(okapi::radps);
+    const double eX = poseError.X().convert(meter);
+    const double eY = poseError.X().convert(meter);
+    const double eTheta = poseError.Theta().convert(radian);
+    const double vRef = vel.convert(mps);
+    const double omegaRef = angularVel.convert(radps);
 
-    // Unit inconsistent dark magic ?!?!??!?!!!??!?!
-    double k = 2.0 * zeta * std::sqrt(std::pow(omegaRef, 2) + b * vRef * vRef);
+    // k = 2ζ√(ω_ref² + b v_ref²)
+    double k = 2.0 * zeta * std::sqrt(std::pow(omegaRef, 2) + b * std::pow(vRef, 2));
+    
+    double alteredVelMps = vRef * std::cos(poseError.Theta().convert(radian)) + k * eX,
+    double alteredAngularVelRadps = omegaRef + k * eTheta + b * vRef * Math::sinc(eTheta) * eY;
 
-    QSpeed v{(vRef * cos(eTheta) + k * eX) * okapi::mps};
-    QAngularSpeed omega{(omegaRef + k * eTheta + b * vRef * Math::sinc(eTheta) * eY) * okapi::radps};
-
-    QSpeed vl = (2 * vl + ((omega.convert(radps) * trackWidth.convert(meter)) * mps)) / 2;
-    QSpeed vr = (2 * vl - ((omega.convert(radps) * trackWidth.convert(meter)) * mps)) / 2;
+    QSpeed vl = (alteredVelMps - trackWidth.convert(meter) / 2 * alteredAngularVelRadps) * mps;
+    QSpeed vr = (alteredVelMps + trackWidth.convert(meter) / 2 * alteredAngularVelRadps) * mps;
 
     return {vl, vr};
 }

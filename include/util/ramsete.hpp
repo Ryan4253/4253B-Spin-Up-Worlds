@@ -20,7 +20,7 @@ class RamseteController{
         double iZeta = 0.7
     );
 
-    std::pair<QSpeed, QSpeed> getTargetVelocity(QSpeed vel, QAngularSpeed angularVel, const Pose& error);
+    std::pair<QSpeed, QSpeed> getTargetVelocity(const Pose& currentPose, const Pose& poseRef, QSpeed vel, QAngularSpeed angularVel);
 
     private:
     Pose tolerance;

@@ -134,7 +134,6 @@ void AsyncOdomMotionProfiler::setTarget(okapi::QAngle iAngle, bool waitUntilSett
 
 void AsyncOdomMotionProfiler::setTarget(std::vector<squiggles::ProfilePoint> iPath, squiggles::Pose iInitialPose, bool withRamsete, bool waitUntilSettled) {
     std::cout << "AsyncOdomMotionProfiler :: Setting Target of Squiggles Path\n";
-    ramsete->getTargetVelocity(1 * okapi::mps, 1 * okapi::radps, {0.1 * okapi::meter, 0.1 * okapi::meter, 0.1 * okapi::radian});
 
     lock.take(5);
     setState(OdomMotionProfileState::SQUIGGLES_FOLLOW);
@@ -245,12 +244,13 @@ void AsyncOdomMotionProfiler::loop(){
                 // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << "," << desiredSquigglesPose.yaw << ")\n";
                 // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
                 squiggles::Pose currPose = {chassis->getState().x.convert(okapi::meter), chassis->getState().y.convert(okapi::meter), chassis->getState().theta.convert(okapi::radian)};
-                squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};
+                // squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};
 
                 std::pair<okapi::QSpeed, okapi::QSpeed> adjustedVel = ramsete->getTargetVelocity(
+                    {currPose.x * okapi::meter, currPose.y * okapi::meter, currPose.yaw * okapi::radian}, 
+                    {desiredSquigglesPose.x * okapi::meter, desiredSquigglesPose.y * okapi::meter, desiredSquigglesPose.yaw * okapi::radian}, 
                     desiredVelMPS * okapi::mps, 
-                    desiredAngularVelRPS * okapi::radps, 
-                    {poseError.x * okapi::meter, poseError.y * okapi::meter, poseError.yaw * okapi::radian}
+                    desiredAngularVelRPS * okapi::radps
                 );
                 double leftRPM = Math::ftpsToRPM(adjustedVel.first.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::ftpsToRPM(adjustedVel.second.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
