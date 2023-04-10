@@ -79,7 +79,7 @@ void opcontrol() {
     // squiggward->generate(iPathPoints);
     // std::cout << "done :)\n";
 
-    profiler->setTarget(path, {0, 0, 0}, false, true);
+    profiler->setTarget(path, {0, 0, 0}, true, true);
     // while(true) pros::delay(50);
 
     // pointTurnToAngle(90_deg);
@@ -99,20 +99,19 @@ void opcontrol() {
         pros::lcd::print(2, "Odometry Angle: %f", lib4253::Math::angleWrap360(chassis->getState().theta.convert(degree)));
         pros::lcd::print(3, "IMU Angle: %f", imu->get());
         if(master->getDigital(ControllerDigital::A)) {
-            superstructure->jog(0, PistonState::DISENGAGED);
+            superstructure->jog(0);
+            superstructure->setPistonState(PistonState::PUNCHER_LOCK);
         } else if(master->getDigital(ControllerDigital::B)) {
-            superstructure->jog(-1, PistonState::INTAKE);
+            superstructure->jog(-1);
         } else if(master->getDigital(ControllerDigital::X)) {
-            superstructure->jog(1, PistonState::PUNCHER);
+            superstructure->jog(1);
         } else if(master->getDigital(ControllerDigital::Y)) {
-            intakeSolenoid->set(true);
+            superstructure->jog(0);
+            superstructure->setPistonState(PistonState::PUNCHER_UNLOCK);
         } else {
-            superstructure->jog(0, PistonState::PUNCHER);
+            superstructure->jog(0);
             intakeSolenoid->set(false);
         }
-        // else {
-        //     superstructure->jog(0, PistonState::DISENGAGED);
-        // }
         pros::delay(10);
     }
 }

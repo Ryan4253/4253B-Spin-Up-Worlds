@@ -22,9 +22,13 @@ void Superstructure::disable(bool idisabled) {
     isDisabled = idisabled;
 }
 
-void Superstructure::jog(double ipercentSpeed, PistonState ipistonState) {
+void Superstructure::jog(double ipercentSpeed) {
     controlState = ControlState::MANUAL;
     jogSpeed = ipercentSpeed;
+}
+
+void Superstructure::setPistonState(PistonState ipistonState) {
+    controlState = ControlState::MANUAL;
     pistonState = ipistonState;
 }
 
@@ -32,7 +36,6 @@ void Superstructure::fire() {
     controlState = ControlState::AUTOMATIC;
     fired = true;
     wantToIntake = false;
-
 }
 
 void Superstructure::intake(bool iwantToIntake) {
@@ -61,15 +64,13 @@ void Superstructure::loop() {
     while (true) {
         switch (controlState) {
             case ControlState::MANUAL:
+                leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+                rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
                 if(pistonState == PistonState::DISENGAGED) {
                     chassisSolenoid->set(true);
-                    leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
-                    rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
                 } else {
                     chassisSolenoid->set(false);
-                    leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-                    rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-                    if(pistonState == PistonState::INTAKE) {
+                    if(pistonState == PistonState::PUNCHER_UNLOCK) {
                         puncherSolenoid->set(false);
                     } else {
                         puncherSolenoid->set(true);
@@ -86,10 +87,12 @@ void Superstructure::loop() {
                 }
                 if ((puncherLimitSwitch->isPressed() && fired) || (!puncherLimitSwitch->isPressed())) {
                     superstructureState = SuperstructureState::LOADING;
+                    puncherSolenoid->set(false);
                     leftMotor->moveVoltage(puncherSpeed * 12000);
                     rightMotor->moveVoltage(puncherSpeed * 12000);
                 } else {
                     superstructureState = SuperstructureState::LOADED;
+                    puncherSolenoid->set(true);
                     leftMotor->moveVoltage(0);
                     rightMotor->moveVoltage(0);
                 }

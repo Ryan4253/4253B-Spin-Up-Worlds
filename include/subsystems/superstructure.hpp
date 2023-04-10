@@ -11,7 +11,7 @@ enum class SuperstructureState { LOADED, LOADING, IDLE };
 
 enum class ControlState { MANUAL, AUTOMATIC };
 
-enum class PistonState { DISENGAGED, INTAKE, PUNCHER };
+enum class PistonState { DISENGAGED, PUNCHER_LOCK, PUNCHER_UNLOCK };
 
 template class ryan::StateMachine<SuperstructureState>;
 
@@ -24,7 +24,8 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
                    const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch);
 
     void disable(bool idisabled);
-    void jog(double ipercentSpeed, PistonState ipistonState);
+    void jog(double ipercentSpeed);
+    void setPistonState(PistonState ipistonState);
     void fire();
     void intake(bool iwantToIntake);
     void drive(bool iwantToDrive, double ileftSpeed, double irightSpeed);
