@@ -52,7 +52,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-    std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {0.6096, 0.6096, 3.1415/2}});
+    std::vector<squiggles::ProfilePoint> path = squiggward->generate({{0, 0, 0}, {2, 1, 0}});
     // double prevVel = 0.0;
     // double prevAccel = 0.0;
     // for(int i = 0; i < path.size(); i++) {
@@ -79,8 +79,10 @@ void opcontrol() {
     // squiggward->generate(iPathPoints);
     // std::cout << "done :)\n";
 
+    leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
+    rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     profiler->setTarget(path, {0, 0, 0}, true, true);
-    // while(true) pros::delay(50);
+    while(true) pros::delay(50);
 
     // pointTurnToAngle(90_deg);
 

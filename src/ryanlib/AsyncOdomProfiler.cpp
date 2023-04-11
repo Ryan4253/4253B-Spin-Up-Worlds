@@ -231,18 +231,20 @@ void AsyncOdomMotionProfiler::loop(){
             int i = (int)(time.convert(okapi::millisecond) / 10);
             if(i > squigglesPath.size()-1) i = squigglesPath.size()-1; 
             squiggles::ProfilePoint point = squigglesPath[i];
-            double leftVel = point.wheel_velocities[0];
-            double rightVel = point.wheel_velocities[1];
+            double rightVel = point.wheel_velocities[0];
+            double leftVel = point.wheel_velocities[1];
             if(ramseteEnabled) {
                 double desiredVelMPS = (leftVel + rightVel) / 2;
-                double desiredAngularVelRPS = (rightVel - leftVel) / chassis->getChassisScales().wheelTrack.convert(okapi::meter);
+                double desiredAngularVelRPS = (leftVel - rightVel) / chassis->getChassisScales().wheelTrack.convert(okapi::meter);
+                double testAngVel = (rightVel - leftVel) / chassis->getChassisScales().wheelTrack.convert(okapi::meter);
                 double deltaDist = desiredVelMPS * 0.01;
                 double deltaAngle = desiredAngularVelRPS * 0.01;
                 double alteredDesiredAngle = desiredSquigglesPose.yaw + deltaAngle * 0.5;
                 squiggles::Pose deltaPose = {(std::cos(alteredDesiredAngle) * deltaDist), (std::sin(alteredDesiredAngle) * deltaDist), deltaAngle};
                 desiredSquigglesPose = {desiredSquigglesPose.x + deltaPose.x, desiredSquigglesPose.y + deltaPose.y, desiredSquigglesPose.yaw + deltaAngle};
                 // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << "," << desiredSquigglesPose.yaw << ")\n";
-                // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
+                std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
+                // std::cout << "(" << chassis->getState().x.convert(okapi::meter) << "," << chassis->getState().y.convert(okapi::meter) << ")\n";
                 squiggles::Pose currPose = {chassis->getState().x.convert(okapi::meter), chassis->getState().y.convert(okapi::meter), chassis->getState().theta.convert(okapi::radian)};
                 // squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};
 
@@ -254,9 +256,12 @@ void AsyncOdomMotionProfiler::loop(){
                 );
                 double leftRPM = Math::ftpsToRPM(adjustedVel.first.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::ftpsToRPM(adjustedVel.second.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
-                leftMotor->moveVelocity(leftRPM);
-                rightMotor->moveVelocity(rightRPM);
+                std::cout << "left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
+                leftMotor->moveVelocity(rightRPM);
+                rightMotor->moveVelocity(leftRPM);
             } else {
+                std::cout << "(" << chassis->getState().x.convert(okapi::meter) << "," << chassis->getState().y.convert(okapi::meter) << ")\n";
+
                 double leftRPM = Math::mpsToRPM(leftVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::mpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);

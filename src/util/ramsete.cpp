@@ -9,7 +9,7 @@ RamseteController::RamseteController(QLength iTrackWidth, double iB, double iZet
 }
 
 std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(const Pose& currentPose, const Pose& poseRef, QSpeed vel, QAngularSpeed angularVel){
-    Pose poseError = poseRef.relativeTo(currentPose);
+    Pose poseError = {poseRef.X() - currentPose.X(), poseRef.Y() - currentPose.Y(), poseRef.Theta() - currentPose.Theta()};
 
     // Aliases for equation readability
     const double eX = poseError.X().convert(meter);
@@ -21,7 +21,7 @@ std::pair<QSpeed, QSpeed> RamseteController::getTargetVelocity(const Pose& curre
     // k = 2ζ√(ω_ref² + b v_ref²)
     double k = 2.0 * zeta * std::sqrt(std::pow(omegaRef, 2) + b * std::pow(vRef, 2));
     
-    double alteredVelMps = vRef * std::cos(poseError.Theta().convert(radian)) + k * eX,
+    double alteredVelMps = vRef * std::cos(poseError.Theta().convert(radian)) + k * eX;
     double alteredAngularVelRadps = omegaRef + k * eTheta + b * vRef * Math::sinc(eTheta) * eY;
 
     QSpeed vl = (alteredVelMps - trackWidth.convert(meter) / 2 * alteredAngularVelRadps) * mps;

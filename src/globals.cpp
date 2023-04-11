@@ -35,8 +35,8 @@ ryan::ProfileConstraint moveLimit({5.25_ftps, 10_ftps2, 10_ftps2, 34_ftps3}); //
 std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
     .withMotors(leftChassis, rightChassis)
     .withDimensions(
-        {AbstractMotor::gearset::blue, (double)6/4}, 
-        {{3.25_in, 1.38_ft}, imev5BlueTPR}
+        {AbstractMotor::gearset::blue, 1.5}, 
+        {{3.25_in, 28_cm}, 300 * 1.5}
     )
     .withOdometry()
     .buildOdometry();
