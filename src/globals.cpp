@@ -25,8 +25,6 @@ std::shared_ptr<ryan::Solenoid> intakeSolenoid(new ryan::Solenoid('A'));
 
 // SENSORS
 std::shared_ptr<IMU> imu(new IMU(17));
-std::shared_ptr<ADIButton> puncherLimitSwitch(new ADIButton(std::make_pair<std::uint8_t, std::uint8_t>(14, 'H')));
-// std::shared_ptr<ADIEncoder> middleTracker(new ADIEncoder('A', 'B'));
 
 // MOTION PROFILE CONSTANTS
 ryan::ProfileConstraint moveLimit({5_ftps, 8_ftps2, 8_ftps2, 34_ftps3}); //! todo!
@@ -69,6 +67,5 @@ std::shared_ptr<IterativePosPIDController> turnPID(new IterativePosPIDController
 
 std::shared_ptr<Superstructure> superstructure(new Superstructure(
     leftSuperstructure, rightSuperstructure, 
-    chassisSolenoid, puncherSolenoid, 
-    puncherLimitSwitch
+    chassisSolenoid, puncherSolenoid
 ));

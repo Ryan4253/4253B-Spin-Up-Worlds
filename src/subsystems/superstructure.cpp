@@ -3,14 +3,12 @@
 Superstructure::Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
                                const std::shared_ptr<okapi::Motor> &irightMotor,
                                const std::shared_ptr<ryan::Solenoid> &ichassisSolenoid, 
-                               const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid, 
-                               const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch)
+                               const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid)
 {
     leftMotor = std::move(ileftMotor);
     rightMotor = std::move(irightMotor);
     chassisSolenoid = std::move(ichassisSolenoid);
     puncherSolenoid = std::move(ipuncherSolenoid);
-    puncherLimitSwitch = std::move(ipuncherLimitSwitch);
 
     isDisabled = false;
     fired = false;
@@ -82,19 +80,23 @@ void Superstructure::loop() {
 
             case ControlState::AUTOMATIC:
                 driving = false;
-                if (!puncherLimitSwitch->isPressed()) {
+                if (!holding) {
                     fired = false;
                 }
-                if ((puncherLimitSwitch->isPressed() && fired) || (!puncherLimitSwitch->isPressed())) {
+                if ((holding && fired) || (!holding)) {
                     superstructureState = SuperstructureState::LOADING;
                     puncherSolenoid->set(false);
                     leftMotor->moveVoltage(puncherSpeed * 12000);
                     rightMotor->moveVoltage(puncherSpeed * 12000);
+                    if(leftMotor->getEfficiency() < 10 && rightMotor->getEfficiency() < 10) {
+                        holding = true;
+                    }
                 } else {
                     superstructureState = SuperstructureState::LOADED;
                     puncherSolenoid->set(true);
                     leftMotor->moveVoltage(0);
                     rightMotor->moveVoltage(0);
+                    holding = false;
                 }
                 if(wantToIntake && superstructureState != SuperstructureState::LOADING) {
                     leftMotor->moveVoltage(intakeSpeed * -12000);

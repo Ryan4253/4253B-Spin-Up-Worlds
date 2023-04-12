@@ -20,8 +20,7 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
                    const std::shared_ptr<okapi::Motor> &irightMotor,
                    const std::shared_ptr<ryan::Solenoid> &ichassisSolenoid, 
-                   const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid, 
-                   const std::shared_ptr<okapi::ADIButton> &ipuncherLimitSwitch);
+                   const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid);
 
     void disable(bool idisabled);
     void jog(double ipercentSpeed);
@@ -39,10 +38,9 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     std::shared_ptr<okapi::Motor> leftMotor, rightMotor;
     std::shared_ptr<ryan::Solenoid> chassisSolenoid;
     std::shared_ptr<ryan::Solenoid> puncherSolenoid;
-    std::shared_ptr<okapi::ADIButton> puncherLimitSwitch;
 
     private:
-    bool isDisabled, fired, wantToIntake, wantToDrive, isAutonomousEnabled, driving;
+    bool isDisabled, fired, wantToIntake, wantToDrive, isAutonomousEnabled, driving, holding;
     double jogSpeed{0.0};
     double puncherSpeed{1.0};
     double intakeSpeed{1.0};
