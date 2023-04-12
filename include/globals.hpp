@@ -8,6 +8,7 @@
 #include "okapi/impl/chassis/controller/chassisControllerBuilder.hpp"
 #include "okapi/api/control/iterative/iterativePosPidController.hpp"
 #include "okapi/impl/device/button/adiButton.hpp"
+#include "okapi/api/units/QAngularSpeed.hpp"
 
 #include "ryanlib/Solenoid.hpp"
 #include "ryanlib/AsyncProfiler.hpp"

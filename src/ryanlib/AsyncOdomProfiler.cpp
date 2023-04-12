@@ -143,7 +143,7 @@ void AsyncOdomMotionProfiler::setTarget(std::vector<squiggles::ProfilePoint> iPa
     squigglesPath = iPath;
     desiredSquigglesPose = iInitialPose;
     ramseteEnabled = withRamsete;
-    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.02 * okapi::millisecond;
+    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.25 * okapi::second;
     timer->placeMark();
     lock.give();
 
@@ -242,7 +242,7 @@ void AsyncOdomMotionProfiler::loop(){
                 squiggles::Pose deltaPose = {(std::cos(alteredDesiredAngle) * deltaDist), (std::sin(alteredDesiredAngle) * deltaDist), deltaAngle};
                 desiredSquigglesPose = {desiredSquigglesPose.x + deltaPose.x, desiredSquigglesPose.y + deltaPose.y, desiredSquigglesPose.yaw + deltaAngle};
                 // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << "," << desiredSquigglesPose.yaw << ")\n";
-                // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
+                std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
                 // std::cout << "(" << chassis->getState().x.convert(okapi::meter) << "," << chassis->getState().y.convert(okapi::meter) << ")\n";
                 squiggles::Pose currPose = {chassis->getState().x.convert(okapi::meter), chassis->getState().y.convert(okapi::meter), chassis->getState().theta.convert(okapi::radian)};
                 // squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};
@@ -250,19 +250,19 @@ void AsyncOdomMotionProfiler::loop(){
                 std::pair<okapi::QSpeed, okapi::QSpeed> adjustedVel = ramsete->getTargetVelocity(
                     {currPose.x * okapi::meter, currPose.y * okapi::meter, currPose.yaw * okapi::radian}, 
                     {desiredSquigglesPose.x * okapi::meter, desiredSquigglesPose.y * okapi::meter, desiredSquigglesPose.yaw * okapi::radian}, 
-                    desiredVelMPS * okapi::mps, 
+                    desiredVelMPS * okapi::ftps, 
                     desiredAngularVelRPS * okapi::radps
                 );
                 double leftRPM = Math::ftpsToRPM(adjustedVel.first.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::ftpsToRPM(adjustedVel.second.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
-                std::cout << "left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
+                // std::cout << "left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
                 leftMotor->moveVelocity(rightRPM);
                 rightMotor->moveVelocity(leftRPM);
             } else {
                 std::cout << "(" << chassis->getState().x.convert(okapi::meter) << "," << chassis->getState().y.convert(okapi::meter) << ")\n";
 
-                double leftRPM = Math::mpsToRPM(leftVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
-                double rightRPM = Math::mpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
+                double leftRPM = Math::ftpsToRPM(leftVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
+                double rightRPM = Math::ftpsToRPM(rightVel, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
                 // std::cout << "left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;

@@ -18,9 +18,9 @@ std::shared_ptr<MotorGroup> leftChassis(new MotorGroup({leftFront, leftMid, left
 std::shared_ptr<MotorGroup> rightChassis(new MotorGroup({rightFront, rightMid, rightBack}));
 
 // SOLENOIDS
-std::shared_ptr<ryan::Solenoid> chassisSolenoid(new ryan::Solenoid({{14, 'F'}}));
-std::shared_ptr<ryan::Solenoid> puncherSolenoid(new ryan::Solenoid({{14, 'G'}}));
-std::shared_ptr<ryan::Solenoid> expansionSolenoid(new ryan::Solenoid({{14, 'E'}}));
+std::shared_ptr<ryan::Solenoid> chassisSolenoid(new ryan::Solenoid('C'));
+std::shared_ptr<ryan::Solenoid> puncherSolenoid(new ryan::Solenoid('B'));
+std::shared_ptr<ryan::Solenoid> expansionSolenoid(new ryan::Solenoid('D'));
 std::shared_ptr<ryan::Solenoid> intakeSolenoid(new ryan::Solenoid('A'));
 
 // SENSORS
@@ -29,7 +29,7 @@ std::shared_ptr<ADIButton> puncherLimitSwitch(new ADIButton(std::make_pair<std::
 // std::shared_ptr<ADIEncoder> middleTracker(new ADIEncoder('A', 'B'));
 
 // MOTION PROFILE CONSTANTS
-ryan::ProfileConstraint moveLimit({5.25_ftps, 10_ftps2, 10_ftps2, 34_ftps3}); //! todo!
+ryan::ProfileConstraint moveLimit({5_ftps, 8_ftps2, 8_ftps2, 34_ftps3}); //! todo!
 
 // SUBSYSTEM CONTROLLERS
 std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
@@ -42,10 +42,16 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
     .buildOdometry();
 
 QSpeed theoreticalMaxSpeed = 5.672_ftps;
-QSpeed profileMaxVel = 5.25_ftps;
-QAcceleration profileMaxAccel = 10_ftps2;
+QSpeed profileMaxVel = 5_ftps;
+QAcceleration profileMaxAccel = 8_ftps2;
 QJerk profileMaxJerk = 34_ftps3;
-squiggles::Constraints constraints(profileMaxVel.convert(mps), profileMaxAccel.convert(mps2), profileMaxJerk.convert(mps3));
+QAngularSpeed profileMaxCurvature = 5 * okapi::radps;
+squiggles::Constraints constraints(
+    profileMaxVel.convert(ftps), 
+    profileMaxAccel.convert(ftps2), 
+    profileMaxJerk.convert(ftps3)
+    // profileMaxCurvature.convert(radps)
+);
 
 std::shared_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
     constraints, 

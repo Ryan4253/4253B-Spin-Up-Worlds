@@ -82,7 +82,7 @@ void opcontrol() {
     leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     profiler->setTarget(path, {0, 0, 0}, true, true);
-    while(true) pros::delay(50);
+    pros::delay(1000);
 
     // pointTurnToAngle(90_deg);
 
@@ -97,7 +97,7 @@ void opcontrol() {
             DEADBAND
         );
         // std::cout << "angle: " << chassis->getState().theta.convert(degree) << std::endl;
-        pros::lcd::print(1, "X: %f    Y: %f", chassis->getState().x.convert(meter), chassis->getState().y.convert(meter));
+        pros::lcd::print(1, "X: %f    Y: %f", chassis->getState().x.convert(foot), chassis->getState().y.convert(foot));
         pros::lcd::print(2, "Odometry Angle: %f", lib4253::Math::angleWrap360(chassis->getState().theta.convert(degree)));
         pros::lcd::print(3, "IMU Angle: %f", imu->get());
         if(master->getDigital(ControllerDigital::A)) {
@@ -110,7 +110,14 @@ void opcontrol() {
         } else if(master->getDigital(ControllerDigital::Y)) {
             superstructure->jog(0);
             superstructure->setPistonState(PistonState::PUNCHER_UNLOCK);
-        } else {
+        } else if(master->getDigital(ControllerDigital::left)) {
+            superstructure->jog(0);
+            superstructure->setPistonState(PistonState::DISENGAGED);
+        } else if(master->getDigital(ControllerDigital::right)) {
+            superstructure->jog(0);
+            intakeSolenoid->set(true);
+        }
+        else {
             superstructure->jog(0);
             intakeSolenoid->set(false);
         }
