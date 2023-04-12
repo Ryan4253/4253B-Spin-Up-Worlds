@@ -234,9 +234,9 @@ void AsyncOdomMotionProfiler::loop(){
             double rightVel = point.wheel_velocities[0];
             double leftVel = point.wheel_velocities[1];
             if(ramseteEnabled) {
-                double desiredVelMPS = (leftVel + rightVel) / 2;
-                double desiredAngularVelRPS = (leftVel - rightVel) / chassis->getChassisScales().wheelTrack.convert(okapi::meter);
-                double deltaDist = desiredVelMPS * 0.01;
+                double desiredVelFtps = (leftVel + rightVel) / 2;
+                double desiredAngularVelRPS = (leftVel - rightVel) / chassis->getChassisScales().wheelTrack.convert(okapi::foot);
+                double deltaDist = desiredVelFtps * 0.01;
                 double deltaAngle = desiredAngularVelRPS * 0.01;
                 double alteredDesiredAngle = desiredSquigglesPose.yaw + deltaAngle * 0.5;
                 squiggles::Pose deltaPose = {(std::cos(alteredDesiredAngle) * deltaDist), (std::sin(alteredDesiredAngle) * deltaDist), deltaAngle};
@@ -244,13 +244,13 @@ void AsyncOdomMotionProfiler::loop(){
                 // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << "," << desiredSquigglesPose.yaw << ")\n";
                 std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
                 // std::cout << "(" << chassis->getState().x.convert(okapi::meter) << "," << chassis->getState().y.convert(okapi::meter) << ")\n";
-                squiggles::Pose currPose = {chassis->getState().x.convert(okapi::meter), chassis->getState().y.convert(okapi::meter), chassis->getState().theta.convert(okapi::radian)};
+                squiggles::Pose currPose = {chassis->getState().x.convert(okapi::foot), chassis->getState().y.convert(okapi::foot), chassis->getState().theta.convert(okapi::radian)};
                 // squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};
 
                 std::pair<okapi::QSpeed, okapi::QSpeed> adjustedVel = ramsete->getTargetVelocity(
-                    {currPose.x * okapi::meter, currPose.y * okapi::meter, currPose.yaw * okapi::radian}, 
-                    {desiredSquigglesPose.x * okapi::meter, desiredSquigglesPose.y * okapi::meter, desiredSquigglesPose.yaw * okapi::radian}, 
-                    desiredVelMPS * okapi::ftps, 
+                    {currPose.x * okapi::foot, currPose.y * okapi::foot, currPose.yaw * okapi::radian}, 
+                    {desiredSquigglesPose.x * okapi::foot, desiredSquigglesPose.y * okapi::foot, desiredSquigglesPose.yaw * okapi::radian}, 
+                    desiredVelFtps * okapi::ftps, 
                     desiredAngularVelRPS * okapi::radps
                 );
                 double leftRPM = Math::ftpsToRPM(adjustedVel.first.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
