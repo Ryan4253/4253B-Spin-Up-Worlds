@@ -31,13 +31,12 @@ extern std::shared_ptr<Controller> master;
 extern std::shared_ptr<MotorGroup> leftChassis;
 extern std::shared_ptr<MotorGroup> rightChassis;
 
-extern std::shared_ptr<MotorGroup> superstructureMotors;
-
 // PNEUMAICS
 extern std::shared_ptr<ryan::Solenoid> intakeSolenoid; 
 
 // SENSORS
 extern std::shared_ptr<IMU> imu;
+extern std::shared_ptr<RotationSensor> puncherEncoder;
 
 // SUBSYSTEM CONTROLLERS
 extern std::shared_ptr<OdomChassisController> chassis;

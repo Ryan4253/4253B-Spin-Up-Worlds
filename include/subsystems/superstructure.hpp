@@ -2,6 +2,7 @@
 
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "okapi/impl/device/button/adiButton.hpp"
+#include "okapi/impl/device/rotarysensor/rotationSensor.hpp"
 
 #include "ryanlib/StateMachine.hpp"
 #include "ryanlib/TaskWrapper.hpp"
@@ -20,12 +21,13 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
                    const std::shared_ptr<okapi::Motor> &irightMotor,
                    const std::shared_ptr<ryan::Solenoid> &ichassisSolenoid, 
-                   const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid);
+                   const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid,
+                   const std::shared_ptr<okapi::RotationSensor> &ipuncherEncoder);
 
     void disable(bool idisabled);
     void jog(double ipercentSpeed);
     void setPistonState(PistonState ipistonState);
-    void fire();
+    void fire(bool ifirstTime = false);
     void intake(bool iwantToIntake);
     void drive(bool iwantToDrive, double ileftSpeed, double irightSpeed);
     void setPuncherSpeed(double ispeed);
@@ -38,9 +40,10 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     std::shared_ptr<okapi::Motor> leftMotor, rightMotor;
     std::shared_ptr<ryan::Solenoid> chassisSolenoid;
     std::shared_ptr<ryan::Solenoid> puncherSolenoid;
+    std::shared_ptr<okapi::RotationSensor> puncherEncoder;
 
     private:
-    bool isDisabled, fired, wantToIntake, wantToDrive, isAutonomousEnabled, driving, holding;
+    bool isDisabled, fired, wantToIntake, wantToDrive, isAutonomousEnabled, driving, loaded, firstTime = true;
     double jogSpeed{0.0};
     double puncherSpeed{1.0};
     double intakeSpeed{1.0};
