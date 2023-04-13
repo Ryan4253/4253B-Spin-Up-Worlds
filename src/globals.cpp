@@ -53,7 +53,7 @@ squiggles::Constraints constraints(
 
 std::shared_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGenerator(
     constraints, 
-    std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::meter), constraints), 
+    std::make_shared<squiggles::TankModel>(chassis->getChassisScales().wheelTrack.convert(okapi::foot), constraints), 
     0.01
 ));
 

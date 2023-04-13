@@ -143,7 +143,7 @@ void AsyncOdomMotionProfiler::setTarget(std::vector<squiggles::ProfilePoint> iPa
     squigglesPath = iPath;
     desiredSquigglesPose = iInitialPose;
     ramseteEnabled = withRamsete;
-    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.25 * okapi::second;
+    maxTime = squigglesPath.size() * 10 * okapi::millisecond + 0.02 * okapi::millisecond;
     timer->placeMark();
     lock.give();
 
