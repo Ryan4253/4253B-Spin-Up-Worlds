@@ -14,142 +14,92 @@ Superstructure::Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
     puncherEncoder->reset();
 
     isDisabled = false;
-    fired = false;
-    pistonState = PistonState::DISENGAGED;
-    controlState = ControlState::MANUAL;
 }
 
-void Superstructure::disable(bool idisabled) {
-    isDisabled = idisabled;
+bool Superstructure::isLoaded() const{
+    return !puncherSolenoid->getState();
 }
 
-void Superstructure::jog(double ipercentSpeed) {
-    controlState = ControlState::MANUAL;
-    jogSpeed = ipercentSpeed;
+bool Superstructure::isDrive() const{
+    return chassisSolenoid->getState();
 }
 
-void Superstructure::setPistonState(PistonState ipistonState) {
-    controlState = ControlState::MANUAL;
-    pistonState = ipistonState;
+bool Superstructure::isSuperstructure() const{
+    return !chassisSolenoid->getState();
 }
 
-void Superstructure::fire(bool ifirstTime) {
-    controlState = ControlState::AUTOMATIC;
-    fired = true;
-    wantToIntake = false;
-    loaded = false;
-    firstTime = ifirstTime;
+bool Superstructure::isPulledBack() const{
+    return puncherEncoder->get() > 960;
 }
 
-void Superstructure::intake(bool iwantToIntake) {
-    controlState = ControlState::AUTOMATIC;
-    wantToIntake = iwantToIntake;
+void Superstructure::lockPuncher(){
+    puncherSolenoid->set(false);
 }
 
-void Superstructure::drive(bool iwantToDrive, double ileftSpeed, double irightSpeed) {
-    controlState = ControlState::AUTOMATIC;
-    wantToDrive = iwantToDrive;
-    leftSpeed = ileftSpeed;
-    rightSpeed = irightSpeed;
+void Superstructure::unlockPuncher(){
+    puncherSolenoid->set(true);
 }
 
-void Superstructure::setPuncherSpeed(double ispeed) {
-    puncherSpeed = std::abs(ispeed);
+void Superstructure::setDriveMode(){
+    chassisSolenoid->set(true);
 }
 
-void Superstructure::setIntakeSpeed(double ispeed) {
-    intakeSpeed = std::abs(ispeed);
+void Superstructure::setSuperStructureMode(){
+    chassisSolenoid->set(false);
 }
 
-void Superstructure::loop() {
-    if(isDisabled) return;
-    
-    while (true) {
-        if(controlState == ControlState::MANUAL) {
-            leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
-            rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
-            if(pistonState == PistonState::DISENGAGED) {
-                chassisSolenoid->set(true);
-            } else {
-                chassisSolenoid->set(false);
-                if(pistonState == PistonState::PUNCHER_UNLOCK) {
-                    puncherSolenoid->set(true);
-                } else {
-                    puncherSolenoid->set(false);
-                }
-            }
-            leftMotor->moveVoltage(jogSpeed * 12000);
-            rightMotor->moveVoltage(jogSpeed * 12000);
-            // std::cout << "L: " << leftMotor->getEfficiency() << "R: " << rightMotor->getEfficiency() << std::endl;
-        } else if(controlState == ControlState::AUTOMATIC) {
-            driving = false;
+void Superstructure::setDrive(double iLeftPower, double iRightPower){
+    setDriveMode();
+    leftMotor->moveVoltage(iLeftPower);
+    rightMotor->moveVoltage(iRightPower);
+}
 
-            
-            if(!loaded && puncherEncoder->get() < 940) {
-                leftMotor->moveVoltage(puncherSpeed * 12000);
-                rightMotor->moveVoltage(puncherSpeed * 12000);
-                puncherSolenoid->set(true);
-            } else if(loaded && wantToIntake) {
-                leftMotor->moveVoltage(intakeSpeed * -12000);
-                rightMotor->moveVoltage(intakeSpeed * -12000);
-                puncherSolenoid->set(false);
-            } else if(loaded && fired) {
-                puncherSolenoid->set(true);
-            } else {
-                leftMotor->moveVoltage(0);
-                rightMotor->moveVoltage(0);
-                puncherSolenoid->set(false);
-            }
+void Superstructure::setIntake(uint16_t iPower){
+    if(!isLoaded()){
+        return;
+    }
+    setSuperStructureMode();
+    leftMotor->moveVoltage(-iPower);
+    rightMotor->moveVoltage(-iPower);
+}
 
-            if(puncherEncoder->get() > 940) { 
-                loaded = true;
-            }
+void Superstructure::setPuncher(uint16_t iPower){
+    setSuperStructureMode();
+    leftMotor->moveVoltage(iPower);
+    rightMotor->moveVoltage(iPower);
+}
 
+void Superstructure::setDisable(bool iDisable){
+    isDisabled = iDisable;
+}
 
+void Superstructure::shoot(){
+    if(!isLoaded()){
+        return;
+    }
+    unlockPuncher();
+    pros::delay(50);
+}
 
-
-            // if(wantToIntake && puncherEncoder->get() > 940) {
-            //     wantToDrive = false;
-            //     leftMotor->moveVoltage(intakeSpeed * -12000);
-            //     rightMotor->moveVoltage(intakeSpeed * -12000);
-            // } 
-            // if(!wantToIntake && puncherEncoder->get() < 940) {
-            //     wantToDrive = false;
-            //     leftMotor->moveVoltage(puncherSpeed * 12000);
-            //     rightMotor->moveVoltage(puncherSpeed * 12000);
-            //     puncherSolenoid->set(true);
-            // } else  {
-            //     leftMotor->moveVoltage(0);
-            //     rightMotor->moveVoltage(0);
-            //     puncherSolenoid->set(false);
-            //     if(wantToIntake) {
-            //         leftMotor->moveVoltage(intakeSpeed * -12000);
-            //         rightMotor->moveVoltage(intakeSpeed * -12000);
-            //     }
-            // }
-            // if(!wantToIntake && puncherEncoder->get() > 940 && fired) {
-            //     wantToDrive = false;
-            //     puncherSolenoid->set(true);
-            //     pros::delay(1000);
-            // }
-
-
-
-            // if(wantToDrive) {
-            //     driving = true;
-            //     leftMotor->moveVoltage(leftSpeed * 12000);
-            //     rightMotor->moveVoltage(rightSpeed * 12000);
-            // }
-            // if(driving) {
-            //     chassisSolenoid->set(true);
-            //     leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
-            //     rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
-            // } else {
-            //     chassisSolenoid->set(false);
-            //     leftMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-            //     rightMotor->setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-            // }
-        }
+void Superstructure::loop(){
+    while(true){
         pros::delay(10);
+        if(isDisabled){
+            continue;
+        }
+
+        if(isDrive()){
+            continue;
+        }
+
+        if(isLoaded()){
+            continue;
+        }
+
+        setPuncher(12000);
+        if(isPulledBack()){
+            setPuncher(0);
+            puncherSolenoid->set(false);
+        }
     }
 }

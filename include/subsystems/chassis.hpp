@@ -7,6 +7,9 @@
 
 #include "globals.hpp"
 
+#include <algorithm>
+#include <utility>
+
 enum class ChassisSide {
     LEFT, RIGHT
 };
@@ -16,3 +19,5 @@ void pointTurnToAngle(okapi::QAngle targetAngle);
 void pivotTurnToAngle(okapi::QAngle targetAngle, double leftScaler, double rightScaler);
 
 void pivotTurnToAngle(okapi::QAngle targetAngle, ChassisSide drivingSide);
+
+std::pair<double, double> curvatureDrive(double throttle, double curvature, double deadband);

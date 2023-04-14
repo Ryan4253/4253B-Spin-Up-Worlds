@@ -33,6 +33,10 @@ extern std::shared_ptr<MotorGroup> rightChassis;
 
 // PNEUMAICS
 extern std::shared_ptr<ryan::Solenoid> intakeSolenoid; 
+extern std::shared_ptr<ryan::Solenoid> chassisSolenoid; 
+extern std::shared_ptr<ryan::Solenoid> expansionSolenoid; 
+extern std::shared_ptr<ryan::Solenoid> puncherSolenoid; 
+
 
 // SENSORS
 extern std::shared_ptr<IMU> imu;

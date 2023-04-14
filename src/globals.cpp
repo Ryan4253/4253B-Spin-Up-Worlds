@@ -18,9 +18,9 @@ std::shared_ptr<MotorGroup> leftChassis(new MotorGroup({leftFront, leftMid, left
 std::shared_ptr<MotorGroup> rightChassis(new MotorGroup({rightFront, rightMid, rightBack}));
 
 // SOLENOIDS
-std::shared_ptr<ryan::Solenoid> chassisSolenoid(new ryan::Solenoid('C'));
+std::shared_ptr<ryan::Solenoid> chassisSolenoid(new ryan::Solenoid('D'));
 std::shared_ptr<ryan::Solenoid> puncherSolenoid(new ryan::Solenoid('B'));
-std::shared_ptr<ryan::Solenoid> expansionSolenoid(new ryan::Solenoid('D'));
+std::shared_ptr<ryan::Solenoid> expansionSolenoid(new ryan::Solenoid('C'));
 std::shared_ptr<ryan::Solenoid> intakeSolenoid(new ryan::Solenoid('A'));
 
 // SENSORS

@@ -8,15 +8,7 @@
 #include "ryanlib/TaskWrapper.hpp"
 #include "ryanlib/Solenoid.hpp"
 
-enum class SuperstructureState { LOADED, LOADING, IDLE };
-
-enum class ControlState { MANUAL, AUTOMATIC };
-
-enum class PistonState { DISENGAGED, PUNCHER_LOCK, PUNCHER_UNLOCK };
-
-template class ryan::StateMachine<SuperstructureState>;
-
-class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<SuperstructureState> {
+class Superstructure : public ryan::TaskWrapper{
     public:
     Superstructure(const std::shared_ptr<okapi::Motor> &ileftMotor,
                    const std::shared_ptr<okapi::Motor> &irightMotor,
@@ -24,17 +16,34 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
                    const std::shared_ptr<ryan::Solenoid> &ipuncherSolenoid,
                    const std::shared_ptr<okapi::RotationSensor> &ipuncherEncoder);
 
-    void disable(bool idisabled);
-    void jog(double ipercentSpeed);
-    void setPistonState(PistonState ipistonState);
-    void fire(bool ifirstTime = false);
-    void intake(bool iwantToIntake);
-    void drive(bool iwantToDrive, double ileftSpeed, double irightSpeed);
-    void setPuncherSpeed(double ispeed);
-    void setIntakeSpeed(double ispeed);
-    void autonomousEnabled(bool iisEnabled);
+    bool isLoaded() const;
+
+    bool isDrive() const;
+
+    bool isSuperstructure() const;
+
+    bool isPulledBack() const;
+
+    void lockPuncher();
+
+    void unlockPuncher();
+
+    void setDriveMode();
+
+    void setSuperStructureMode();
+
+    void setDrive(double iLeftPower, double iRightPower);
+
+    void setIntake(uint16_t iPower);
+
+    void setPuncher(uint16_t iPower);
+
+    void setDisable(bool iDisable);
+
+    void shoot();
 
     void loop() override;
+    
 
     protected:
     std::shared_ptr<okapi::Motor> leftMotor, rightMotor;
@@ -43,13 +52,5 @@ class Superstructure : public ryan::TaskWrapper, public ryan::StateMachine<Super
     std::shared_ptr<okapi::RotationSensor> puncherEncoder;
 
     private:
-    bool isDisabled, fired, wantToIntake, wantToDrive, isAutonomousEnabled, driving, loaded, firstTime = true;
-    double jogSpeed{0.0};
-    double puncherSpeed{1.0};
-    double intakeSpeed{1.0};
-    double leftSpeed{0.0};
-    double rightSpeed{0.0};
-    ControlState controlState;
-    PistonState pistonState;
-    SuperstructureState superstructureState;
+    bool isDisabled;
 };
