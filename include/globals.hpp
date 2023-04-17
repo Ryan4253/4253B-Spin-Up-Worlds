@@ -36,6 +36,7 @@ extern std::shared_ptr<ryan::Solenoid> intakeSolenoid;
 extern std::shared_ptr<ryan::Solenoid> chassisSolenoid; 
 extern std::shared_ptr<ryan::Solenoid> expansionSolenoid; 
 extern std::shared_ptr<ryan::Solenoid> puncherSolenoid; 
+extern std::shared_ptr<ryan::Solenoid> bandReleaseSolenoid; 
 
 
 // SENSORS

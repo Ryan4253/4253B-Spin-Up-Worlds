@@ -22,6 +22,7 @@ std::shared_ptr<ryan::Solenoid> chassisSolenoid(new ryan::Solenoid('D'));
 std::shared_ptr<ryan::Solenoid> puncherSolenoid(new ryan::Solenoid('B'));
 std::shared_ptr<ryan::Solenoid> expansionSolenoid(new ryan::Solenoid('C'));
 std::shared_ptr<ryan::Solenoid> intakeSolenoid(new ryan::Solenoid('A'));
+std::shared_ptr<ryan::Solenoid> bandReleaseSolenoid(new ryan::Solenoid('E'));
 
 // SENSORS
 std::shared_ptr<IMU> imu(new IMU(17));

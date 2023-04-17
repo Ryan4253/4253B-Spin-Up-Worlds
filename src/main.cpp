@@ -20,6 +20,7 @@ void competition_initialize() {}
 void autonomous() {
     leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
     rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
+    Autons::awp();
     // switch (selector::auton) {
     //     case 0:
     //         Autons::skills();
@@ -67,7 +68,7 @@ void opcontrol() {
             superstructure->setDrive(leftPower, rightPower);
         }
         else{
-            superstructure->setIntake(master->getDigital(ControllerDigital::L1)*12000);
+            superstructure->setIntake(master->getDigital(ControllerDigital::L1) * 12000);
         }
         
         if(master->getDigital(ControllerDigital::R1)) {
@@ -76,6 +77,7 @@ void opcontrol() {
 
         expansionSolenoid->set(master->getDigital(ControllerDigital::A));
         intakeSolenoid->set(master->getDigital(ControllerDigital::Y));
+        bandReleaseSolenoid->set(master->getDigital(ControllerDigital::X));
     
         pros::delay(10);
     }
