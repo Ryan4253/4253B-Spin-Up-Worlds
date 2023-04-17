@@ -242,7 +242,7 @@ void AsyncOdomMotionProfiler::loop(){
                 squiggles::Pose deltaPose = {(std::cos(alteredDesiredAngle) * deltaDist), (std::sin(alteredDesiredAngle) * deltaDist), deltaAngle};
                 desiredSquigglesPose = {desiredSquigglesPose.x + deltaPose.x, desiredSquigglesPose.y + deltaPose.y, desiredSquigglesPose.yaw + deltaAngle};
                 // std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << "," << desiredSquigglesPose.yaw << ")\n";
-                std::cout << "(" << desiredSquigglesPose.x << "," << desiredSquigglesPose.y << ")\n";
+                std::cout << "(" << desiredSquigglesPose.y << "," << desiredSquigglesPose.x << ")\n";
                 // std::cout << "(" << chassis->getState().x.convert(okapi::meter) << "," << chassis->getState().y.convert(okapi::meter) << ")\n";
                 squiggles::Pose currPose = {chassis->getState().x.convert(okapi::foot), chassis->getState().y.convert(okapi::foot), chassis->getState().theta.convert(okapi::radian)};
                 // squiggles::Pose poseError = {desiredSquigglesPose.x - currPose.x, desiredSquigglesPose.y - currPose.y, desiredSquigglesPose.yaw - currPose.yaw};

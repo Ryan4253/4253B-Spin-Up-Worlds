@@ -25,7 +25,7 @@ std::shared_ptr<ryan::Solenoid> intakeSolenoid(new ryan::Solenoid('A'));
 std::shared_ptr<ryan::Solenoid> bandReleaseSolenoid(new ryan::Solenoid('E'));
 
 // SENSORS
-std::shared_ptr<IMU> imu(new IMU(17));
+std::shared_ptr<IMU> imu(new IMU(14));
 std::shared_ptr<RotationSensor> puncherEncoder(new RotationSensor(16, true));
 
 // MOTION PROFILE CONSTANTS

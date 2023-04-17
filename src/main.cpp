@@ -54,7 +54,14 @@ void autonomous() {
 
 
 void opcontrol() {
+    // auto path = squiggward->generate({{0, 0, 0}, {0.53, -0.32, -45 * degreeToRadian}});
+    // profiler->setTarget(path, {0, 0, 0}, true, true);
+
+    // pivotTurnToAngle(-45_deg, ChassisSide::RIGHT);
+
     while(true) {
+        pros::lcd::print(0, "X: %f    Y: %f", chassis->getState().x.convert(foot), chassis->getState().y.convert(foot));
+        pros::lcd::print(1, "Theta: %f", chassis->getState().theta.convert(degree));
         
         auto [leftPower, rightPower] = curvatureDrive(
             master->getAnalog(ControllerAnalog::leftY), 
