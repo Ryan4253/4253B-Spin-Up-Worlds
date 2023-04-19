@@ -19,6 +19,8 @@ void Autons::jonathan() {
     profiler->setTarget(-2_ft, true);
 
     profiler->setTarget(path1, {-1.95, 0.22, 0}, true, true);
+
+    profiler->setTarget(Paths::Test, true, true);
 }
 
 void Autons::simple() {}

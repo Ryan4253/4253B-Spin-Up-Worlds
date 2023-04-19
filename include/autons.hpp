@@ -1,6 +1,7 @@
 #pragma once
 #include "subsystems/superstructure.hpp"
 #include "subsystems/chassis.hpp"
+#include "paths.hpp"
 
 namespace Autons {
 

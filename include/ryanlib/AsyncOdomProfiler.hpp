@@ -20,7 +20,7 @@ namespace ryan{
  * 
  */
 enum class OdomMotionProfileState{
-    MOVE, FOLLOW, TURN, IDLE, SQUIGGLES_FOLLOW
+    MOVE, FOLLOW, TURN, IDLE, SQUIGGLES_FOLLOW, FOLLOW_TIMED
 };
 
 // forward declare
@@ -122,6 +122,8 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
 
     void setTarget(std::vector<squiggles::ProfilePoint> iPath, squiggles::Pose iInitialPose, bool withRamsete = false, bool waitUntilSettled = false);
 
+    void setTarget(const TimedTrajectory& iPath, bool withRamsete = false, bool waitUntilSettled = false);
+
     /**
      * @brief stop the chassis from moving
      * 
@@ -153,6 +155,10 @@ class AsyncOdomMotionProfiler : public StateMachine<OdomMotionProfileState, Odom
     okapi::QTime maxTime{0.0};
 
     Trajectory path;
+    TimedTrajectory timedPath;
+    bool firstPath = true;
+    int index = 0;
+    okapi::QTime delayTime{0.0};
     std::vector<squiggles::ProfilePoint> squigglesPath; 
     squiggles::Pose desiredSquigglesPose{0, 0, 0};
 

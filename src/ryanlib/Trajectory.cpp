@@ -27,4 +27,29 @@ int Trajectory::size() const{
     return path.size();
 }
 
+/** Timed Trajectory State */
+TimedTrajectoryState::TimedTrajectoryState(double itime, double ix, double iy, double itheta, double ilinVel, double iangularVel)
+    : time(itime), x(ix), y(iy), theta(itheta), linearVel(ilinVel), angularVel(iangularVel) {}
+
+/** Timed Trajectory */
+TimedTrajectory::TimedTrajectory(const std::initializer_list<TimedTrajectoryState> &itrajectory) {
+    trajectory = itrajectory;
+    totalTimeSeconds = trajectory[trajectory.size()-1].time;
+}
+
+int TimedTrajectory::size() const {
+    return trajectory.size();
+}
+
+double TimedTrajectory::getTimeSeconds() {
+    return totalTimeSeconds;
+}
+
+TimedTrajectoryState TimedTrajectory::operator[](int index) const {
+    if (index < 0 || index >= trajectory.size()) {
+        return {0, 0, 0, 0, 0, 0};
+    }
+    return trajectory[index];
+}
+
 }
