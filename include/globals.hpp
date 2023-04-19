@@ -46,6 +46,7 @@ extern std::shared_ptr<RotationSensor> puncherEncoder;
 // SUBSYSTEM CONTROLLERS
 extern std::shared_ptr<OdomChassisController> chassis;
 extern std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler;
-extern std::shared_ptr<IterativePosPIDController> turnPID;
+extern std::shared_ptr<IterativePosPIDController> pointTurnPID;
+extern std::shared_ptr<IterativePosPIDController> pivotTurnPID;
 extern std::shared_ptr<Superstructure> superstructure;
 extern std::shared_ptr<squiggles::SplineGenerator> squiggward;

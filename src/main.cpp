@@ -9,8 +9,8 @@ void initialize() {
     imu->calibrate();
     superstructure->startTask();
 
-    turnPID->setIntegratorReset(true);
-    turnPID->setIntegralLimits(0.5, -0.5);
+    pointTurnPID->setIntegratorReset(true);
+    pointTurnPID->setIntegralLimits(0.5, -0.5);
 }
 
 void disabled() {}
@@ -58,10 +58,13 @@ void opcontrol() {
     // profiler->setTarget(path, {0, 0, 0}, true, true);
 
     // pivotTurnToAngle(-45_deg, ChassisSide::RIGHT);
+    Autons::jonathan();
+
 
     while(true) {
         pros::lcd::print(0, "X: %f    Y: %f", chassis->getState().x.convert(foot), chassis->getState().y.convert(foot));
         pros::lcd::print(1, "Theta: %f", chassis->getState().theta.convert(degree));
+        pros::lcd::print(2, "IMU Angle: %f", imu->get());
         
         auto [leftPower, rightPower] = curvatureDrive(
             master->getAnalog(ControllerAnalog::leftY), 
