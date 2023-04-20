@@ -79,6 +79,7 @@ void opcontrol(void);
 #include "subsystems/superstructure.hpp"
 #include "globals.hpp"
 #include "autons.hpp"
+#include "paths.hpp"
 // #include <iostream>
 // #include <ostream>
 #endif

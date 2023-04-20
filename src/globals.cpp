@@ -22,9 +22,10 @@ std::shared_ptr<ryan::Solenoid> chassisSolenoid(new ryan::Solenoid('D'));
 std::shared_ptr<ryan::Solenoid> puncherSolenoid(new ryan::Solenoid('B'));
 std::shared_ptr<ryan::Solenoid> expansionSolenoid(new ryan::Solenoid('C'));
 std::shared_ptr<ryan::Solenoid> intakeSolenoid(new ryan::Solenoid('A'));
+std::shared_ptr<ryan::Solenoid> bandReleaseSolenoid(new ryan::Solenoid('E'));
 
 // SENSORS
-std::shared_ptr<IMU> imu(new IMU(17));
+std::shared_ptr<IMU> imu(new IMU(14));
 std::shared_ptr<RotationSensor> puncherEncoder(new RotationSensor(16, true));
 
 // MOTION PROFILE CONSTANTS
@@ -41,10 +42,10 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
     .buildOdometry();
 
 QSpeed theoreticalMaxSpeed = 5.672_ftps;
-QSpeed profileMaxVel = 5_ftps;
-QAcceleration profileMaxAccel = 8_ftps2;
+QSpeed profileMaxVel = 4.5_ftps;
+QAcceleration profileMaxAccel = 5_ftps2;
 QJerk profileMaxJerk = 34_ftps3;
-QAngularSpeed profileMaxCurvature = 5 * okapi::radps;
+QAngularSpeed profileMaxCurvature = 3 * okapi::radps;
 squiggles::Constraints constraints(
     profileMaxVel.convert(ftps), 
     profileMaxAccel.convert(ftps2), 
@@ -63,8 +64,11 @@ std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler = ryan::AsyncOdomMotionP
     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
     .build();
 
-std::shared_ptr<IterativePosPIDController> turnPID(new IterativePosPIDController
+std::shared_ptr<IterativePosPIDController> pointTurnPID(new IterativePosPIDController
     (0.024, 0.0001, 0.00067, 0, TimeUtilFactory::withSettledUtilParams(1.5, 2, 100_ms)));
+
+std::shared_ptr<IterativePosPIDController> pivotTurnPID(new IterativePosPIDController
+    (0.04, 0.0, 0.0, 0, TimeUtilFactory::withSettledUtilParams(2, 2, 100_ms)));
 
 std::shared_ptr<Superstructure> superstructure(new Superstructure(
     leftSuperstructure, rightSuperstructure, 

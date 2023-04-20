@@ -1,0 +1,43 @@
+name: Test
+on: push
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Prep please dependencies
+        run: pip3 install setuptools |
+          sudo apt-get install -y python3-setuptools
+      - name: Install LCOV dependency
+        run: |
+          git clone https://github.com/linux-test-project/lcov.git
+          cd lcov
+          sudo make install
+          sudo ln -sf /usr/bin/gcov-9 /usr/bin/gcov
+      - name: Init CMake
+        env:
+          CC: gcc-9
+          CXX: g++-9
+        run: ./run_cmake_unix.sh
+      - name: Build
+        env:
+          CC: gcc-9
+          CXX: g++-9
+        run: cd build && make && cd ..
+      - name: Test
+        run: ./build/main/test/squiggles_tst
+      - name: Collect Coverage
+        run: |
+          lcov --directory ./build/main/src/CMakeFiles/squiggles_lib.dir/ --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --remove coverage.info '*/gtest/*' --output-file coverage.info
+          lcov --remove coverage.info '*/googletest/*' --output-file coverage.info
+          lcov --remove coverage.info '*-test*' --output-file coverage.info
+          lcov --list coverage.info
+      - uses: codecov/codecov-action@v1.0.5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          file: ./coverage.info

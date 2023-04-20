@@ -1,0 +1,20 @@
+name: Build
+on: push
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Init CMake
+        env:
+          CC: gcc-9
+          CXX: g++-9
+        run: ./run_cmake_unix.sh
+      - name: Build
+        env:
+          CC: gcc-9
+          CXX: g++-9
+        run: cd build && make all && cd ..
