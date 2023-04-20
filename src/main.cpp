@@ -7,6 +7,7 @@ void initialize() {
     // selector::init(); 
 
     imu->calibrate();
+    puncherEncoder->reset();
     superstructure->startTask();
 
     turnPID->setIntegratorReset(true);
@@ -54,7 +55,7 @@ void autonomous() {
 
 void opcontrol() {
     while(true) {
-        
+        std::cout << puncherEncoder->get() << std::endl;
         auto [leftPower, rightPower] = curvatureDrive(
             master->getAnalog(ControllerAnalog::leftY), 
             master->getAnalog(ControllerAnalog::rightX),

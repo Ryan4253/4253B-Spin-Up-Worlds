@@ -29,7 +29,7 @@ bool Superstructure::isSuperstructure() const{
 }
 
 bool Superstructure::isPulledBack() const{
-    return puncherEncoder->get() > 960;
+    return puncherEncoder->get() > 1320;
 }
 
 void Superstructure::lockPuncher(){
@@ -78,7 +78,7 @@ void Superstructure::shoot(){
         return;
     }
     unlockPuncher();
-    pros::delay(50);
+    pros::delay(1000);
 }
 
 void Superstructure::loop(){
@@ -101,5 +101,6 @@ void Superstructure::loop(){
             setPuncher(0);
             puncherSolenoid->set(false);
         }
+        std::cout << puncherEncoder->get() << std::endl;
     }
 }
