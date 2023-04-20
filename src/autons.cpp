@@ -3,7 +3,7 @@
 void Autons::doNothing() {}
 
 void Autons::jonathan() {
-    auto path1 = squiggward->generate({{-1.95, 0.22, 0}, {-0.355, 1.64, 67 * degreeToRadian}});
+    // auto path1 = squiggward->generate({{-1.95, 0.22, 0}, {-0.355, 1.64, 67 * degreeToRadian}});
 
     auto model = chassis->getModel();
 
@@ -16,9 +16,22 @@ void Autons::jonathan() {
     profiler->waitUntilSettled();
 
     pivotTurnToAngle(-45_deg, ChassisSide::LEFT);
-    profiler->setTarget(-2_ft, true);
+    profiler->setTarget(-6_in, true);
+    pointTurnToAngle(30_deg);
 
-    profiler->setTarget(path1, {-1.95, 0.22, 0}, true, true);
+    intakeSolenoid->set(true);
+    profiler->setTarget(12_in, true);
+    superstructure->shoot();
+    while(!superstructure->isPulledBack()) pros::delay(10);
+    pivotTurnToAngle(10_deg, ChassisSide::RIGHT);
+    intakeSolenoid->set(false);
+    superstructure->setIntake(12000);
+    pros::delay(1000);
+    pivotTurnToAngle(30_deg, ChassisSide::RIGHT);
+
+    pros::delay(5000);
+
+    // profiler->setTarget(path1, {-1.95, 0.22, 0}, true, true);
 
     // profiler->setTarget(Paths::Test, true, true);
 }

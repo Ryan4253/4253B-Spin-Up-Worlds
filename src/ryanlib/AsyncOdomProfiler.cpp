@@ -205,7 +205,7 @@ void AsyncOdomMotionProfiler::loop(){
         if(getState() == OdomMotionProfileState::IDLE){
 
         }
-        else if(time > maxTime){
+        else if(time > maxTime && getState() != OdomMotionProfileState::FOLLOW_TIMED){
             setState(OdomMotionProfileState::IDLE);
             chassis->getModel()->tank(0, 0);
         }
@@ -254,6 +254,8 @@ void AsyncOdomMotionProfiler::loop(){
             if (index < timedPath.size() - 1) {
                     delayTime = (timedPath[index + 1].time - timedPath[index].time) *
                                 okapi::second;
+            } else {
+                setState(OdomMotionProfileState::IDLE);
             }
             auto currPose = chassis->getState();
             if(ramseteEnabled) {
@@ -261,7 +263,7 @@ void AsyncOdomMotionProfiler::loop(){
                     {currPose.x, currPose.y, currPose.theta}, 
                     {desiredState.x * okapi::foot, desiredState.y * okapi::foot, desiredState.theta * okapi::degree}, 
                     desiredState.linearVel * okapi::ftps, 
-                    desiredState.angularVel * okapi::degreeToRadian * okapi::radps
+                    (desiredState.angularVel * okapi::degreeToRadian) * okapi::radps
                 );
                 double leftRPM = Math::ftpsToRPM(adjustedVel.first.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::ftpsToRPM(adjustedVel.second.convert(okapi::ftps), chassis->getChassisScales(), chassis->getGearsetRatioPair());
@@ -269,14 +271,18 @@ void AsyncOdomMotionProfiler::loop(){
                 leftMotor->moveVelocity(rightRPM);
                 rightMotor->moveVelocity(leftRPM);
             } else {
-                double vl = (desiredState.linearVel - chassis->getChassisScales().wheelTrack.convert(okapi::foot) / 2 * (desiredState.angularVel * okapi::degreeToRadian));
-                double vr = (desiredState.linearVel + chassis->getChassisScales().wheelTrack.convert(okapi::foot) / 2 * (desiredState.angularVel * okapi::degreeToRadian));
+                // std::cout << "hi \n";
+                double vl = (desiredState.linearVel - 0.6 / 2.0 * (desiredState.angularVel * okapi::degreeToRadian));
+                double vr = (desiredState.linearVel + 0.6 / 2.0 * (desiredState.angularVel * okapi::degreeToRadian));
 
                 double leftRPM = Math::ftpsToRPM(vl, chassis->getChassisScales(), chassis->getGearsetRatioPair());
                 double rightRPM = Math::ftpsToRPM(vr, chassis->getChassisScales(), chassis->getGearsetRatioPair());
+                // std::cout << "left RPM :: " << leftRPM << "    right RPM :: " << rightRPM << std::endl;
+                std::cout << "lin vel: " << desiredState.linearVel << std::endl;
                 leftMotor->moveVelocity(leftRPM);
                 rightMotor->moveVelocity(rightRPM);
             }
+            index++;
         }
         else if(getState() == OdomMotionProfileState::SQUIGGLES_FOLLOW) {
             int i = (int)(time.convert(okapi::millisecond) / 10);

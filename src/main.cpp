@@ -19,8 +19,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-    leftChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
-    rightChassis->setBrakeMode(AbstractMotor::brakeMode::brake);
+    leftChassis->setBrakeMode(AbstractMotor::brakeMode::hold);
+    rightChassis->setBrakeMode(AbstractMotor::brakeMode::hold);
     Autons::awp();
     // switch (selector::auton) {
     //     case 0:
@@ -60,7 +60,6 @@ void opcontrol() {
 
     // pivotTurnToAngle(-45_deg, ChassisSide::RIGHT);
     Autons::jonathan();
-
 
     while(true) {
         std::cout << puncherEncoder->get() << std::endl;
