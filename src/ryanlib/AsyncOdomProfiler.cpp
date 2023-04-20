@@ -125,6 +125,7 @@ void AsyncOdomMotionProfiler::setTarget(const TimedTrajectory& iPath, bool withR
     timedPath = iPath;
     if(firstPath) {
         chassis->setState({timedPath[0].x * okapi::foot, timedPath[0].y * okapi::foot, timedPath[0].theta * okapi::degree});
+        firstPath = false;
     }
     maxTime = timedPath.getTimeSeconds() * okapi::second;
     timer->placeMark();
