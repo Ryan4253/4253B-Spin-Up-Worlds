@@ -7,6 +7,7 @@ void initialize() {
     // selector::init(); 
 
     imu->calibrate();
+    puncherEncoder->reset();
     superstructure->startTask();
 
     pointTurnPID->setIntegratorReset(true);
@@ -62,6 +63,7 @@ void opcontrol() {
 
 
     while(true) {
+        std::cout << puncherEncoder->get() << std::endl;
         pros::lcd::print(0, "X: %f    Y: %f", chassis->getState().x.convert(foot), chassis->getState().y.convert(foot));
         pros::lcd::print(1, "Theta: %f", chassis->getState().theta.convert(degree));
         pros::lcd::print(2, "IMU Angle: %f", imu->get());
