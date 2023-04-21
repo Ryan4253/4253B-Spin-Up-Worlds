@@ -29,7 +29,7 @@ bool Superstructure::isSuperstructure() const{
 }
 
 bool Superstructure::isPulledBack() const{
-    return puncherEncoder->get() > 1320;
+    return puncherEncoder->get() > 920;
 }
 
 void Superstructure::lockPuncher(){

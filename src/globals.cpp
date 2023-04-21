@@ -65,10 +65,10 @@ std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler = ryan::AsyncOdomMotionP
     .build();
 
 std::shared_ptr<IterativePosPIDController> pointTurnPID(new IterativePosPIDController
-    (0.024, 0.0001, 0.00067, 0, TimeUtilFactory::withSettledUtilParams(1.5, 2, 100_ms)));
+    (0.025, 0.0001, 0.0005, 0, TimeUtilFactory::withSettledUtilParams(2, 2, 100_ms)));
 
 std::shared_ptr<IterativePosPIDController> pivotTurnPID(new IterativePosPIDController
-    (0.04, 0.0, 0.0, 0, TimeUtilFactory::withSettledUtilParams(2, 2, 100_ms)));
+    (0.045, 0.0, 0.0, 0.0001, TimeUtilFactory::withSettledUtilParams(2, 2, 100_ms)));
 
 std::shared_ptr<Superstructure> superstructure(new Superstructure(
     leftSuperstructure, rightSuperstructure, 

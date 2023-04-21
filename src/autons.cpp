@@ -11,23 +11,37 @@ void Autons::jonathan() {
     model->tank(-0.5, -0.5); pros::delay(150); model->tank(0, 0);
     superstructure->setIntake(12000); pros::delay(250); superstructure->setIntake(0);
     profiler->setTarget(6_in);
-    pros::delay(500);
+    pros::delay(250);
     superstructure->setIntake(12000);
     profiler->waitUntilSettled();
+    pros::delay(500);
 
     pivotTurnToAngle(-45_deg, ChassisSide::LEFT);
     profiler->setTarget(-6_in, true);
     pointTurnToAngle(30_deg);
 
     intakeSolenoid->set(true);
-    profiler->setTarget(12_in, true);
-    superstructure->shoot();
-    while(!superstructure->isPulledBack()) pros::delay(10);
-    pivotTurnToAngle(10_deg, ChassisSide::RIGHT);
+    profiler->setTarget(13_in, true);
+    // superstructure->shoot();
+    // while(!superstructure->isPulledBack()) pros::delay(10);
+    // pointTurnToAngle(10_deg); not needed
     intakeSolenoid->set(false);
     superstructure->setIntake(12000);
+    // pointTurnToAngle(30_deg); not needed
+    pros::delay(1500);
+    superstructure->setIntake(0);
+    //shoot
+
+    pivotTurnToAngle(95_deg, ChassisSide::RIGHT);
+    intakeSolenoid->set(true);
+    profiler->setTarget(1.8_ft, true);
+    superstructure->setIntake(12000);
+    intakeSolenoid->set(false);
     pros::delay(1000);
-    pivotTurnToAngle(30_deg, ChassisSide::RIGHT);
+
+    pointTurnToAngle(22_deg);
+    // shoot
+
 
     pros::delay(5000);
 
