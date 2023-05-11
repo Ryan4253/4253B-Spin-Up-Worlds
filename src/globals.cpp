@@ -29,7 +29,7 @@ std::shared_ptr<IMU> imu(new IMU(14));
 std::shared_ptr<RotationSensor> puncherEncoder(new RotationSensor(16, true));
 
 // MOTION PROFILE CONSTANTS
-ryan::ProfileConstraint moveLimit({5_ftps, 8_ftps2, 8_ftps2, 34_ftps3}); //! todo!
+ryan::ProfileConstraint moveLimit({5_ftps, 7_ftps2, 7_ftps2, 34_ftps3}); //! todo!
 
 // SUBSYSTEM CONTROLLERS
 std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
@@ -59,13 +59,13 @@ std::shared_ptr<squiggles::SplineGenerator> squiggward(new squiggles::SplineGene
     0.01
 ));
 
-std::shared_ptr<ryan::AsyncOdomMotionProfiler> profiler = ryan::AsyncOdomMotionProfilerBuilder()
+std::shared_ptr<ryan::AsyncMotionProfiler> profiler = ryan::AsyncMotionProfilerBuilder()
     .withOutput(chassis)
     .withProfiler(std::make_unique<ryan::SCurveMotionProfile>(moveLimit))
     .build();
 
 std::shared_ptr<IterativePosPIDController> pointTurnPID(new IterativePosPIDController
-    (0.024, 0.0001, 0.00067, 0, TimeUtilFactory::withSettledUtilParams(1.5, 2, 100_ms)));
+    (0.024, 0.0001, 0.00067, 0, TimeUtilFactory::withSettledUtilParams(3, 2, 100_ms)));
 
 std::shared_ptr<IterativePosPIDController> pivotTurnPID(new IterativePosPIDController
     (0.04, 0.0, 0.0, 0, TimeUtilFactory::withSettledUtilParams(2, 2, 100_ms)));

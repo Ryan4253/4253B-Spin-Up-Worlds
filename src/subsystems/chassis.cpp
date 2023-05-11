@@ -80,3 +80,17 @@ std::pair<double, double> curvatureDrive(double throttle, double curvature, doub
 
     return std::make_pair(leftSpeed, rightSpeed);
 }
+
+std::pair<double, double> tankDrive(double left, double right, double deadband){
+    left = std::clamp(left, -1.0, 1.0);
+    if (std::abs(left) < deadband) {
+        left = 0;
+    }
+
+    right = std::clamp(right, -1.0, 1.0);
+    if (std::abs(right) < deadband) {
+        right = 0;
+    }
+
+    return std::make_pair(left, right);   
+}

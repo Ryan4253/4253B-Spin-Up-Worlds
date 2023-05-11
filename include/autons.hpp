@@ -6,9 +6,9 @@
 namespace Autons {
 
 void doNothing();
-void jonathan();
-void simple();
-void skills();
-void awp();
+void sixDiscAWP();
+void rollerRight();
+void sixDiscRight();
+void nineDiscRight();
 
 }

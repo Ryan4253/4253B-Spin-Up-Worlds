@@ -21,3 +21,5 @@ void pivotTurnToAngle(okapi::QAngle targetAngle, double leftScaler, double right
 void pivotTurnToAngle(okapi::QAngle targetAngle, ChassisSide drivingSide);
 
 std::pair<double, double> curvatureDrive(double throttle, double curvature, double deadband);
+
+std::pair<double, double> tankDrive(double left, double right, double deadband);

@@ -1,6 +1,17 @@
 #include "main.h"
 #include "autoSelect/selection.h"
 
+double curve(double input){
+    input = input * 100;
+    const double t = 4.5/10;
+
+    const double output = (pow(2.71828, -t) + 
+                           pow(2.71828, (std::abs(input)-100)/10) * 
+                           (1-pow(2.71818, -t))) * input; 
+
+    return output / 100;
+}
+
 void initialize() {
     // Auton Selector
     pros::lcd::initialize();
@@ -19,47 +30,11 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-    leftChassis->setBrakeMode(AbstractMotor::brakeMode::hold);
-    rightChassis->setBrakeMode(AbstractMotor::brakeMode::hold);
-    Autons::awp();
-    // switch (selector::auton) {
-    //     case 0:
-    //         Autons::skills();
-    //         break;
-
-    //     case 1:
-    //         Autons::doNothing();
-    //         break;
-
-    //     case 2:
-    //         Autons::simple();
-    //         break;
-
-    //     case 3:
-    //         Autons::jonathan();
-    //         break;
-
-    //     case -1:
-    //         Autons::doNothing();
-    //         break;
-
-    //     case -2:
-    //         Autons::simple();
-    //         break;
-
-    //     case -3:
-    //         Autons::jonathan();
-    //         break;
-    // }
+    Autons::rollerRight();
 }
 
-
 void opcontrol() {
-    // auto path = squiggward->generate({{0, 0, 0}, {0.53, -0.32, -45 * degreeToRadian}});
-    // profiler->setTarget(path, {0, 0, 0}, true, true);
-
-    // pivotTurnToAngle(-45_deg, ChassisSide::RIGHT);
-    Autons::jonathan();
+    bool disableShooter = false;
 
     while(true) {
         std::cout << puncherEncoder->get() << std::endl;
@@ -67,9 +42,9 @@ void opcontrol() {
         pros::lcd::print(1, "Theta: %f", chassis->getState().theta.convert(degree));
         pros::lcd::print(2, "IMU Angle: %f", imu->get());
         
-        auto [leftPower, rightPower] = curvatureDrive(
-            master->getAnalog(ControllerAnalog::leftY), 
-            master->getAnalog(ControllerAnalog::rightX),
+        auto [leftPower, rightPower] = tankDrive(
+            curve(master->getAnalog(ControllerAnalog::leftY)),
+            curve(master->getAnalog(ControllerAnalog::rightY)),
             DEADBAND
         );
 
@@ -77,6 +52,7 @@ void opcontrol() {
 
         if(master->getDigital(ControllerDigital::R2)){
             superstructure->setDrive(leftPower, rightPower);
+            master->rumble("... ");
         }
         else{
             superstructure->setIntake(master->getDigital(ControllerDigital::L1) * 12000);
@@ -90,6 +66,11 @@ void opcontrol() {
         intakeSolenoid->set(master->getDigital(ControllerDigital::Y));
         bandReleaseSolenoid->set(master->getDigital(ControllerDigital::X));
     
+        if(master->getDigital(ControllerDigital::B)){
+            disableShooter = !disableShooter;
+            superstructure->setDisable(disableShooter);
+        }
+
         pros::delay(10);
     }
 }

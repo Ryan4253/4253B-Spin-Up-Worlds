@@ -29,7 +29,7 @@ bool Superstructure::isSuperstructure() const{
 }
 
 bool Superstructure::isPulledBack() const{
-    return puncherEncoder->get() > 1320;
+    return puncherEncoder->get() > 1250;
 }
 
 void Superstructure::lockPuncher(){
@@ -55,7 +55,7 @@ void Superstructure::setDrive(double iLeftPower, double iRightPower){
 }
 
 void Superstructure::setIntake(uint16_t iPower){
-    if(!isLoaded()){
+    if(!isLoaded() && !isDisabled){
         return;
     }
     setSuperStructureMode();
