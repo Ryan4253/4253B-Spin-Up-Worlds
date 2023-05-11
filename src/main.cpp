@@ -37,10 +37,10 @@ void opcontrol() {
     bool disableShooter = false;
 
     while(true) {
-        std::cout << puncherEncoder->get() << std::endl;
         pros::lcd::print(0, "X: %f    Y: %f", chassis->getState().x.convert(foot), chassis->getState().y.convert(foot));
         pros::lcd::print(1, "Theta: %f", chassis->getState().theta.convert(degree));
         pros::lcd::print(2, "IMU Angle: %f", imu->get());
+        pros::lcd::print(3, "Puncher Encoder: %f", puncherEncoder->get());
         
         auto [leftPower, rightPower] = tankDrive(
             curve(master->getAnalog(ControllerAnalog::leftY)),

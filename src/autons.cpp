@@ -10,6 +10,7 @@ void Autons::rollerRight(){
     pros::delay(800);
     superstructure->setIntake(0);
     profiler->waitUntilSettled();
+    pros::delay(500);
 
 }
 
